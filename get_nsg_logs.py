@@ -15,7 +15,7 @@ parser.add_argument('--displayAllowed', dest='displayAllowed', action='store_tru
                     default=False,
                     help='display as well flows allowed by NSGs (default: False)')
 parser.add_argument('--displayDirection', dest='displayDirection', action='store', default='in',
-                    help='display flows only in a specific direction. Can be in, out, or both')
+                    help='display flows only in a specific direction. Can be in, out, or both (default in)')
 parser.add_argument('--displayHours', dest='displayHours', action='store', type=int, default=1,
                     help='How many hours to look back (default: 1)')
 parser.add_argument('--verbose', dest='verbose', action='store_true',
