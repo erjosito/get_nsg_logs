@@ -54,48 +54,29 @@ displayLB = args.displayLB
 displayHours = args.displayHours
 
 block_blob_service = BlockBlobService(account_name=accountName, account_key=accountKey)
-blobList = block_blob_service.list_blobs(containerName)
+# Create a filtered list of Azure blobs whose resourceId contains /NETWORKSECURITYGROUPS/
+blobList = [blob for blob in block_blob_service.list_blobs(containerName) if '/NETWORKSECURITYGROUPS/' in blob.name]
 
 if args.verbose:
     print('DEBUG: Display variables: displayLB:', displayLB, '- displayDirection:', displayDirection, '- displayHours:', displayHours, '- displayOnlyDrops:', displayOnlyDrops)
 
 # Get a list of NSGs
-# List comprehension does not seem to work (TypeError: 'ListGenerator' object is not subscriptable)
-# nsgList = [blobList[i].name.split('/')[8] for i in blobList]
-nsgList = set([])
-for thisBlob in blobList:
-    blobNameParts = thisBlob.name.split('/')
-    thisNsg = blobNameParts[8]
-    if not thisNsg in nsgList:
-        nsgList.add(thisNsg)
+# Using set function to remove duplicate elements
+nsgList = list(set([blob.name.split('/')[8] for blob in blobList]))
 if args.verbose:
     print('DEBUG: NSGs found in that storage account:', nsgList)
 
 for nsgName in nsgList:
-    # Get a list of days for a given NSG
-    # List comprehensions do not seem to work (TypeError: 'ListGenerator' object is not subscriptable)
-    # dayList = [blobList[i].split('/')[11] for i in blobList if blobList[i].split('/')[8] == nsgName]
-    dateList = []
-    for thisBlob in blobList:
-        blobNameParts = thisBlob.name.split('/')
-        blobNsg  = blobNameParts[8]
-        blobTime = "/".join(blobNameParts[9:14])
-        if blobNsg == nsgName:
-            dateList.append(blobTime)
+    # Get a list of dates for a given NSG
+    dateList = ['/'.join(blob.name.split('/')[9:14]) for blob in blobList if nsgName in blob.name]
     dateList = sorted(dateList, reverse=True)
     dateList = dateList[:displayHours]
     if args.verbose:
         print('DEBUG: Hourly blobs found for NSG', nsgName, ':', dateList, '- displayHours: ', displayHours)
 
+    # Filtered list of blobs that match the list of NSGs and desired dates
     for thisDate in dateList:
-        # Get the corresponding blob for a given NSG and date
-        blobMatches = []
-        for thisBlob in blobList:
-            blobNameParts = thisBlob.name.split('/')
-            blobNsg  = blobNameParts[8]
-            blobTime = "/".join(blobNameParts[9:14])
-            if blobNsg == nsgName and blobTime == thisDate:
-                blobMatches.append(thisBlob.name)
+        blobMatches = [blob.name for blob in blobList if nsgName in blob.name and thisDate in blob.name]
 
         for blobName in blobMatches:
             if args.verbose:
