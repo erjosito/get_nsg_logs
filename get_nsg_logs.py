@@ -54,7 +54,8 @@ displayLB = args.displayLB
 displayHours = args.displayHours
 
 block_blob_service = BlockBlobService(account_name=accountName, account_key=accountKey)
-blobList = block_blob_service.list_blobs(containerName)
+# Create a filtered list of Azure blobs whose resourceId contains /NETWORKSECURITYGROUPS/
+blobList = (blob for blob in block_blob_service.list_blobs(containerName) if '/NETWORKSECURITYGROUPS/' in blob.name)
 
 if args.verbose:
     print('DEBUG: Display variables: displayLB:', displayLB, '- displayDirection:', displayDirection, '- displayHours:', displayHours, '- displayOnlyDrops:', displayOnlyDrops)
