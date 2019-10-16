@@ -19,9 +19,20 @@ AzureNetworkAnalytics_CL
 
 However, you will notice that there is a time lag, and you will not find the very latest logs in Log Analytics. The original NSG Flow logs are stored in storage account, in JSON format, so you could get those logs using the Azure Storage SDK.
 
-You can use the Python script in this repository (assuming you have the Python SDK for storage installed). You can use different flags, like the --help option to get usage information:
+You can use the Python script in this repository (assuming you have the Python SDK for storage installed). You can use different flags, like the --help option to get usage information. If you do not have handy a Python console you can use Azure Cloud Shell and clone this repository:
 
 ```
+git clone https://github.com/erjosito/get_nsg_logs
+```
+
+You might to install the Python module for Azure Storage:
+
+```
+ pip install azure-storage --user 
+```
+
+```
+$ cd ./get_nsg_logs/
 $ python3 ./get_nsg_logs.py --help
 usage: get_nsg_logs.py [-h] [--accountName ACCOUNTNAME] [--displayLB]
                        [--displayAllowed]
