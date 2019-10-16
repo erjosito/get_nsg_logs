@@ -69,7 +69,8 @@ optional arguments:
   --nsg-name NSG_NAME_FILTER
                         filter the output to a specific NSG
   --aggregate           run in verbose mode (default: False)
-  --verbose             run in verbose mode (default: False)```
+  --verbose             run in verbose mode (default: False)
+  ```
 
 There is something you need to do before being able to access Azure Blob Storage: finding out the Azure Storage Account key. The script will read it from the environtment variable STORAGE_ACCOUNT_KEY, that you can set with this command:
 
