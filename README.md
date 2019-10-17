@@ -103,7 +103,13 @@ Totals dst2src -> 190 packets and 266052 bytes
 
 # Testing the tool
 
-Here you have a capture of a typical HTTP request (captured with tcpdump in a Linux VM in Azure):
+Let us generate a typical HTTP request, we will use the service ifconfig.co:
+
+```
+curl -s4 ifconfig.co
+```
+
+In a separate screen you can capture the traffic. Here you have it for the example above (captured with tcpdump in a Linux VM in Azure):
 
 ```
 07:11:16.387239 IP fwtestvm.38264 > 104.28.19.94.http: Flags [S], seq 432244736, win 64240, options [mss 1460,sackOK,TS val 3932777591 ecr 0,nop,wscale 7], length 0
@@ -127,7 +133,7 @@ Totals src2dst -> 6 packets and 419 bytes
 Totals dst2src -> 4 packets and 629 bytes
 ```
 
-Let us check whether half-open TCP connections are verified too. We will use the tool hping3 (on Ubuntu you can install it with `sudo apt install -y hping3`):
+10 packets: Check! All of the packets, including the first SYN and the last ACK were captured in the flow logs. Let us check whether half-open TCP connections are verified too. We will use the tool hping3 (on Ubuntu you can install it with `sudo apt install -y hping3`):
 
 ```
 $ sudo hping3 -V -S -p 80 104.28.19.94
