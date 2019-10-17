@@ -200,6 +200,24 @@ for nsg_name in nsgList:
                                         protocol='udp'
                                     print(record['time'], nsg_name, rule['rule'], action, direction, src_ip, protocol, src_port, dst_ip, dst_port, state, traffic_info)
                                     if args.aggregate:
+                                        # Convert counters to integer
+                                        if packets_src_to_dst.isnumeric():
+                                            packets_src_to_dst = int(packets_src_to_dst)
+                                        else:
+                                            packets_src_to_dst = 0
+                                        if packets_dst_to_src.isnumeric():
+                                            packets_dst_to_src = int(packets_dst_to_src)
+                                        else:
+                                            packets_dst_to_src = 0
+                                        if bytes_src_to_dst.isnumeric():
+                                            bytes_src_to_dst = int(bytes_src_to_dst)
+                                        else:
+                                            bytes_src_to_dst = 0
+                                        if bytes_dst_to_src.isnumeric():
+                                            bytes_dst_to_src = int(bytes_dst_to_src)
+                                        else:
+                                            bytes_dst_to_src = 0
+                                        # Add to aggregates    
                                         packets_src_to_dst_aggr += int(packets_src_to_dst)
                                         bytes_src_to_dst_aggr += int(bytes_src_to_dst)
                                         packets_dst_to_src_aggr += int(packets_dst_to_src)
