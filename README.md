@@ -100,3 +100,83 @@ $ python3 ./get_nsg_logs.py --account-name fwtestdiag354 --version 2 --display-a
 Totals src2dst -> 48 packets and 4081 bytes
 Totals dst2src -> 190 packets and 266052 bytes
 ```
+
+# Testing the tool
+
+Here you have a capture of a typical HTTP request (captured with tcpdump in a Linux VM in Azure):
+
+```
+07:11:16.387239 IP fwtestvm.38264 > 104.28.19.94.http: Flags [S], seq 432244736, win 64240, options [mss 1460,sackOK,TS val 3932777591 ecr 0,nop,wscale 7], length 0
+07:11:16.399859 IP 104.28.19.94.http > fwtestvm.38264: Flags [S.], seq 1557095350, ack 432244737, win 29200, options [mss 1400,nop,nop,sackOK,nop,wscale 10], length 0
+07:11:16.399890 IP fwtestvm.38264 > 104.28.19.94.http: Flags [.], ack 1, win 502, length 0
+07:11:16.399991 IP fwtestvm.38264 > 104.28.19.94.http: Flags [P.], seq 1:76, ack 1, win 502, length 75: HTTP: GET / HTTP/1.1
+07:11:16.412831 IP 104.28.19.94.http > fwtestvm.38264: Flags [.], ack 76, win 29, length 0
+07:11:16.457021 IP 104.28.19.94.http > fwtestvm.38264: Flags [P.], seq 1:390, ack 76, win 29, length 389: HTTP: HTTP/1.1 200 OK
+07:11:16.457045 IP fwtestvm.38264 > 104.28.19.94.http: Flags [.], ack 390, win 501, length 0
+07:11:16.457194 IP fwtestvm.38264 > 104.28.19.94.http: Flags [F.], seq 76, ack 390, win 501, length 0
+07:11:16.470909 IP 104.28.19.94.http > fwtestvm.38264: Flags [F.], seq 390, ack 77, win 29, length 0
+07:11:16.470931 IP fwtestvm.38264 > 104.28.19.94.http: Flags [.], ack 391, win 501, length 0
+```
+
+You can see the TCP 3-way handshake (first 3 packets), the GET request (next 2 packets), the HTTP answer (next 2 packets), and the TCP finalization (last 3 packets). 10 packets in total. Let us check our NSG flows:
+
+```
+>python ./get_nsg_logs.py --account-name fwtestdiag354 --version 2 --display-allowed --display-direction out --only-non-zero --port 80 --aggregate --display-hours 2 --ip 104.28.19.94 --port 38264
+2019-10-17T07:12:17.6127249Z FWTESTVM-NSG DefaultRule_AllowInternetOutBound A O 192.168.1.4 tcp 38264 104.28.19.94 80 E src2dst: 6/419 dst2src: 4/629
+Totals src2dst -> 6 packets and 419 bytes
+Totals dst2src -> 4 packets and 629 bytes
+```
+
+Let us check whether half-open TCP connections are verified too. We will use the tool hping3 (on Ubuntu you can install it with `sudo apt install -y hping3`):
+
+```
+$ sudo hping3 -V -S -p 80 104.28.19.94
+using eth0, addr: 192.168.1.4, MTU: 1500
+HPING 104.28.19.94 (eth0 104.28.19.94): S set, 40 headers + 0 data bytes
+
+len=46 ip=104.28.19.94 ttl=52 DF id=0 tos=0 iplen=44
+sport=80 flags=SA seq=0 win=29200 rtt=15.1 ms
+seq=554566472 ack=1426251946 sum=cc85 urp=0
+
+len=46 ip=104.28.19.94 ttl=52 DF id=0 tos=0 iplen=44
+sport=80 flags=SA seq=1 win=29200 rtt=14.7 ms
+seq=3991602591 ack=1322897034 sum=dfce urp=0
+
+len=46 ip=104.28.19.94 ttl=52 DF id=0 tos=0 iplen=44
+sport=80 flags=SA seq=2 win=29200 rtt=14.6 ms
+seq=2340604942 ack=1706818275 sum=9d27 urp=0
+
+^C
+--- 104.28.19.94 hping statistic ---
+3 packets transmitted, 3 packets received, 0% packet loss
+round-trip min/avg/max = 14.6/14.8/15.1 ms
+```
+
+Our capture shows 9 packets (3 for each hping3 SYN message):
+
+```
+6:40:11.581669 IP fwtestvm.2300 > 104.28.19.94.http: Flags [S], seq 1426251945, win 512, length 0
+06:40:11.593977 IP 104.28.19.94.http > fwtestvm.2300: Flags [S.], seq 554566472, ack 1426251946, win 29200, options [mss 1400], length 0
+06:40:11.593997 IP fwtestvm.2300 > 104.28.19.94.http: Flags [R], seq 1426251946, win 0, length 0
+06:40:12.582130 IP fwtestvm.2301 > 104.28.19.94.http: Flags [S], seq 1322897033, win 512, length 0
+06:40:12.594818 IP 104.28.19.94.http > fwtestvm.2301: Flags [S.], seq 3991602591, ack 1322897034, win 29200, options [mss 1400], length 0
+06:40:12.594848 IP fwtestvm.2301 > 104.28.19.94.http: Flags [R], seq 1322897034, win 0, length 006:40:13.582315 IP fwtestvm.2302 > 104.28.19.94.http: Flags [S], seq 1706818274, win 512, length 0
+06:40:13.595058 IP 104.28.19.94.http > fwtestvm.2302: Flags [S.], seq 2340604942, ack 1706818275, win 29200, options [mss 1400], length 0
+06:40:13.595081 IP fwtestvm.2302 > 104.28.19.94.http: Flags [R], seq 1706818275, win 0, length 0
+```
+
+And our NSG flow counters show the new flows (with TCP source ports 2300, 2301 and 2302), with 3 packets for each flow. Note how the state is E:
+
+```
+python ./get_nsg_logs.py --account-name fwtestdiag354 --version 2 --display-allowed --display-direction out --only-non-zero --port 80 --aggregate --ip 104.28.19.94
+2019-10-17T06:33:17.5758719Z FWTESTVM-NSG DefaultRule_AllowInternetOutBound A O 192.168.1.4 tcp 56228 104.28.19.94 80 C src2dst: 6/420 dst2src: 8/4498
+2019-10-17T06:41:17.5858392Z FWTESTVM-NSG DefaultRule_AllowInternetOutBound A O 192.168.1.4 tcp 2301 104.28.19.94 80 E src2dst: 2/108 dst2src: 1/60
+2019-10-17T06:41:17.5858392Z FWTESTVM-NSG DefaultRule_AllowInternetOutBound A O 192.168.1.4 tcp 2300 104.28.19.94 80 E src2dst: 2/108 dst2src: 1/60
+2019-10-17T06:41:17.5858392Z FWTESTVM-NSG DefaultRule_AllowInternetOutBound A O 192.168.1.4 tcp 2302 104.28.19.94 80 E src2dst: 2/108 dst2src: 1/60
+Totals src2dst -> 12 packets and 744 bytes
+Totals dst2src -> 11 packets and 4678 bytes
+```
+
+# How long do you have to wait?
+
+For new flows the information should be in the logs in around 1 min.
