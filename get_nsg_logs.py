@@ -168,6 +168,7 @@ for nsg_name in nsgList:
                                     print(record['time'], nsg_name, rule['rule'], action, direction, src_ip, src_port, dst_ip, dst_port)
                             else:
                                 tuple_values = flowtuple.split(',')
+                                # print(str(tuple_values))  # DEBUG
                                 src_ip=tuple_values[1]
                                 dst_ip=tuple_values[2]
                                 src_port=tuple_values[3]
@@ -175,11 +176,26 @@ for nsg_name in nsgList:
                                 protocol=tuple_values[5]
                                 direction=tuple_values[6]
                                 action=tuple_values[7]
-                                state=tuple_values[8]
-                                packets_src_to_dst=tuple_values[9]
-                                bytes_src_to_dst=tuple_values[10]
-                                packets_dst_to_src=tuple_values[11]
-                                bytes_dst_to_src=tuple_values[12]
+                                try:
+                                    state=tuple_values[8]
+                                except:
+                                    state=""
+                                try:
+                                    packets_src_to_dst=tuple_values[9]
+                                except:
+                                    packets_src_to_dst=""
+                                try:
+                                    bytes_src_to_dst=tuple_values[10]
+                                except:
+                                    bytes_src_to_dst=""
+                                try:
+                                    packets_dst_to_src=tuple_values[11]
+                                except:
+                                    packets_dst_to_src=""
+                                try:
+                                    bytes_dst_to_src=tuple_values[12]
+                                except:
+                                    bytes_dst_to_src=""
                                 display_record = False
                                 if action=='D' or not display_only_drops:
                                     if (direction == 'I' and display_direction == 'in') or (direction == 'O' and display_direction == 'out') or (display_direction == 'both'):
