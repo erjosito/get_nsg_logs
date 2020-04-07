@@ -136,7 +136,7 @@ for nsg_name in nsgList:
         for blob_name in blob_matches:
             if args.verbose:
                 print('DEBUG: Reading blob', blob_name)
-            local_filename = "flowlog_tmp.json"
+            local_filename = "/tmp/flowlog_tmp.json"
             if os.path.exists(local_filename):
                 os.remove(local_filename)
             block_blob_service.get_blob_to_path(container_name, blob_name, local_filename)
@@ -168,7 +168,6 @@ for nsg_name in nsgList:
                                     print(record['time'], nsg_name, rule['rule'], action, direction, src_ip, src_port, dst_ip, dst_port)
                             else:
                                 tuple_values = flowtuple.split(',')
-                                print(str(tuple_values))  # DEBUG
                                 src_ip=tuple_values[1]
                                 dst_ip=tuple_values[2]
                                 src_port=tuple_values[3]
