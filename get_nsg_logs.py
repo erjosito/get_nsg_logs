@@ -168,7 +168,7 @@ for nsg_name in nsgList:
                                     print(record['time'], nsg_name, rule['rule'], action, direction, src_ip, src_port, dst_ip, dst_port)
                             else:
                                 tuple_values = flowtuple.split(',')
-                                # print(str(tuple_values))  # DEBUG
+                                print(str(tuple_values))  # DEBUG
                                 src_ip=tuple_values[1]
                                 dst_ip=tuple_values[2]
                                 src_port=tuple_values[3]
@@ -208,6 +208,8 @@ for nsg_name in nsgList:
                                                             if ((not args.nsg_name_filter) or (nsg_name.lower() == args.nsg_name_filter.lower())):
                                                                 display_record = True
                                 if display_record:
+                                    if args.verbose:
+                                        print('DEBUG: Flow-tuple:', flowtuple)
                                     traffic_info = 'src2dst: ' + packets_src_to_dst + '/' + bytes_src_to_dst + ' dst2src: ' + packets_dst_to_src + '/' + bytes_dst_to_src
                                     #traffic_info = 'src2dst: ' + packets_src_to_dst + '/' + bytes_src_to_dst + ' dst2src: ' + packets_dst_to_src + '/' + bytes_dst_to_src + ' - '+str(len(packets_src_to_dst))+'/'+str(len(bytes_src_to_dst))+'/'+str(len(packets_dst_to_src))+'/'+str(len(bytes_dst_to_src))
                                     if protocol=='T':
