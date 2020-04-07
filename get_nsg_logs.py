@@ -209,7 +209,7 @@ for nsg_name in nsgList:
                                 if display_record:
                                     if args.verbose:
                                         print('DEBUG: Printing data for flow tuple:', flowtuple)
-                                        print('DEBUG: Previous tuple contained in this record:', record)
+                                        # print('DEBUG: Previous tuple contained in this record:', record)
                                     traffic_info = 'src2dst: ' + packets_src_to_dst + '/' + bytes_src_to_dst + ' dst2src: ' + packets_dst_to_src + '/' + bytes_dst_to_src
                                     #traffic_info = 'src2dst: ' + packets_src_to_dst + '/' + bytes_src_to_dst + ' dst2src: ' + packets_dst_to_src + '/' + bytes_dst_to_src + ' - '+str(len(packets_src_to_dst))+'/'+str(len(bytes_src_to_dst))+'/'+str(len(packets_dst_to_src))+'/'+str(len(bytes_dst_to_src))
                                     if protocol=='T':
