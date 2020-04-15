@@ -81,7 +81,7 @@ export STORAGE_ACCOUNT_KEY=$(az storage account keys list -n your_storage_accoun
 For example, in order to show dropped and allowed traffic of ingress NSG logs stored in the storage account `ernetworkhubdiag857`, excluding Azure LB probe traffic for the last 6 hours:
 
 ```
-$ python3 ./get_nsg_logs.py --account-name ernetworkhubdiag857 --display-hours 6 --display-direction in --displayAllowed
+$ python3 ./get_nsg_logs.py --account-name ernetworkhubdiag857 --display-hours 6 --display-direction in --display-allowed
 2018-09-21T09:49:57.3055150Z NVA-NSG DefaultRule_AllowVnetInBound A I 10.90.15.47 29014 10.139.149.70 23
 2018-09-21T09:49:57.3055150Z NVA-NSG DefaultRule_AllowVnetInBound A I 10.90.15.47 29014 10.139.149.70 23
 2018-09-21T09:49:57.3055150Z NVA-NSG DefaultRule_AllowVnetInBound A I 10.90.15.47 32069 10.139.149.70 23
