@@ -1,7 +1,8 @@
 import os, uuid, sys
 import json
 import argparse
-from azure.storage.blob import BlockBlobService, PublicAccess
+#from azure.storage.blob import BlockBlobService, PublicAccess  SDK<12.0.0
+from azure.storage.blob import BlobServiceClient
 
 
 # Get input arguments
@@ -84,7 +85,8 @@ display_lb = args.display_lb
 # How many blobs to inspect (in an ordered list, there is one blob per minute)
 display_hours = args.display_hours
 
-block_blob_service = BlockBlobService(account_name=account_name, account_key=account_key)
+# block_blob_service = BlockBlobService(account_name=account_name, account_key=account_key)
+block_blob_service = BlobServiceClient(account_name + ".blob.core.windows.net", credential=account_key)
 
 try:
     blobList = block_blob_service.list_blobs(container_name)

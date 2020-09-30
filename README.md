@@ -25,11 +25,12 @@ You can use the Python script in this repository (assuming you have the Python S
 git clone https://github.com/erjosito/get_nsg_logs
 ```
 
-You might to install the Python module for Azure Storage:
+You might to install the Python module for Azure Storage Blob:
 
 ```
- pip install azure-storage --user 
+pip install azure-storage-blob --user
 ```
+
 Now you can have a look at the different options:
 
 ```
