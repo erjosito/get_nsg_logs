@@ -86,12 +86,23 @@ display_lb = args.display_lb
 display_hours = args.display_hours
 
 # block_blob_service = BlockBlobService(account_name=account_name, account_key=account_key)
-block_blob_service = BlobServiceClient(account_name + ".blob.core.windows.net", credential=account_key)
+try:
+    block_blob_service = BlobServiceClient(account_name + ".blob.core.windows.net", credential=account_key)
+except Exception as e:
+    print("Could not create the blob service client", '-', str(e))
+    exit(1)
 
 try:
-    blobList = block_blob_service.list_blobs(container_name)
-except:
-    print("Container", container_name, "does not seem to exist?")
+    container_client = block_blob_service.get_container_client(container_name)
+except Exception as e:
+    print("Could not create container client for container", container_name, '-', str(e))
+    exit(1)
+
+try:
+    # blobList = block_blob_service.list_blobs(container_name)
+    blobList = list(container_client.list_blobs())
+except Exception as e:
+    print("Error fetching logs from container", container_name, '-', str(e))
     exit(1)
 
 if args.verbose:
@@ -101,12 +112,17 @@ if args.verbose:
 # List comprehension does not seem to work (TypeError: 'ListGenerator' object is not subscriptable)
 # nsgList = [blobList[i].name.split('/')[8] for i in blobList]
 nsgList = set([])
+num_of_blobs=0
+num_of_nsgs=0
 for this_blob in blobList:
     blob_name_parts = this_blob.name.split('/')
     thisNsg = blob_name_parts[8]
     if not thisNsg in nsgList:
         nsgList.add(thisNsg)
+        num_of_nsgs += 1
+    num_of_blobs += 1
 if args.verbose:
+    print('DEBUG: Found', str(num_of_blobs), 'blobs for', str(num_of_nsgs), 'NSGs.')
     print('DEBUG: NSGs found in that storage account:', nsgList)
 
 for nsg_name in nsgList:
@@ -118,6 +134,8 @@ for nsg_name in nsgList:
         blob_name_parts = this_blob.name.split('/')
         blob_nsg  = blob_name_parts[8]
         blob_time = "/".join(blob_name_parts[9:14])
+        # if args.verbose:
+        #     print('DEBUG: Looking at blob', this_blob.name, '- NSG:', blob_nsg, '- Time:', blob_time)
         if blob_nsg == nsg_name:
             date_list.append(blob_time)
     date_list = sorted(date_list, reverse=True)
@@ -141,7 +159,10 @@ for nsg_name in nsgList:
             local_filename = "/tmp/flowlog_tmp.json"
             if os.path.exists(local_filename):
                 os.remove(local_filename)
-            block_blob_service.get_blob_to_path(container_name, blob_name, local_filename)
+            blob_client = container_client.get_blob_client(blob_name)
+            with open(local_filename, "wb") as download_file:
+                download_file.write(blob_client.download_blob().readall())
+            # block_blob_service.get_blob_to_path(container_name, blob_name, local_filename)
             text_data=open(local_filename).read()
             try:
                 data = json.loads(text_data)
