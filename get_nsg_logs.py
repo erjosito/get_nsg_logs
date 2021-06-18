@@ -54,7 +54,6 @@ def get_minutes_delta (log_timestamp):
             tstamp2 = datetime.now(timezone.utc)
             td = tstamp2 - tstamp1
             td_min = int(round(td.total_seconds() / 60))
-            print ('Calculated minutes delta:', str(td_min))
             return td_min
         except Exception as e:
             print("Error fetching logs from container", container_name, '-', str(e))
