@@ -29,6 +29,9 @@ parser.add_argument('--display-minutes', dest='display_minutes', action='store',
 parser.add_argument('--only-non-zero', dest='only_non_zero', action='store_true',
                     default=False,
                     help='display only v2 flows with non-zero packet/byte counters (default: False)')
+parser.add_argument('--no-counters', dest='no_counters', action='store_true',
+                    default=False,
+                    help='dont desplay any packet/byte counters (default: False)')
 parser.add_argument('--flow-state', dest='flow_state_filter', action='store',
                     help='filter the output to a specific v2 flow type (B/C/E)')
 parser.add_argument('--ip', dest='ip_filter', action='store',
@@ -37,8 +40,8 @@ parser.add_argument('--port', dest='port_filter', action='store',
                     help='filter the output to a specific TCP/UDP port')
 parser.add_argument('--protocol', dest='protocol_filter', action='store',
                     help='filter the output to a specific protocol (T/U/I)')
-parser.add_argument('--nsg-name', dest='nsg_name_filter', action='store',
-                    help='filter the output to a specific NSG')
+parser.add_argument('--resource-name', dest='resource_name_filter', action='store',
+                    help='filter the output to a specific NSG or Firewall')
 parser.add_argument('--mode', dest='mode', action='store', default='nsg',
                     help='can be nsg,fw,both (default: nsg)')
 parser.add_argument('--aggregate', dest='aggregate', action='store_true',
@@ -80,7 +83,13 @@ display_lb = args.display_lb
 # Set to "in", "out" or "both"
 display_direction = args.display_direction
 if not display_direction in set(['in', 'out', 'both']):
-    print('Please see this script help about how to set the display_direction argument')
+    print('Please see this script help about how to set the --display-direction argument, only in|out|both supported')
+    exit(1)
+
+# Validation for mode
+if not args.mode in set(["nsg", "fw", "both"]):
+    print('Please see this script help about how to set the --mode argument, only nsg|fw|both supported')
+    exit(1)
 
 # Setting storage account name and key
 account_name = args.account_name
@@ -246,6 +255,7 @@ def process_flowlog_records(data):
         else:
             flow_version = 1
         for rule in record['properties']['flows']:
+            rule_name = rule["rule"]
             for flow in rule['flows']:
                 flow_counter += 1
                 for flowtuple in flow['flowTuples']:
@@ -261,8 +271,9 @@ def process_flowlog_records(data):
                         action=tuple_values[7]
                         logrow_dict = {
                             'timestamp': [ timestamp ],
-                            'resource': resource_name,
-                            'type': 'nsg',
+                            'type': ['nsg'],
+                            'resource': [resource_name],
+                            'rule': [rule_name],
                             'src_ip': [ src_ip ],
                             'dst_ip': [ dst_ip ],
                             'src_port': [ src_port ],
@@ -305,8 +316,9 @@ def process_flowlog_records(data):
                             bytes_dst_to_src=""
                         logrow_dict = {
                             'timestamp': [ timestamp ],
-                            'resource': resource_name,
-                            'type': 'nsg',
+                            'type': ['nsg'],
+                            'resource': [resource_name],
+                            'rule': [rule_name],
                             'state': [ state ],
                             'packets_src_to_dst': [ packets_src_to_dst ],
                             'bytes_src_to_dst': [ bytes_src_to_dst ],
@@ -337,7 +349,7 @@ def process_resources (resource_list, blob_list, container_client):
         # dayList = [nsg_blob_list[i].split('/')[11] for i in nsg_blob_list if nsg_blob_list[i].split('/')[8] == nsg_name]
 
         # Check NSG filter
-        if (not args.nsg_name_filter) or (resource.lower() == args.nsg_name_filter.lower()):
+        if (not args.resource_name_filter) or (resource.lower() == args.resource_name_filter.lower()):
             date_list = []
             for this_blob in blob_list:
                 blob_name_parts = this_blob.name.split('/')
@@ -435,33 +447,45 @@ if (args.mode == 'fw') or (args.mode == 'both'):
     df_logs = pd.concat([df_logs, fw_logs], ignore_index=True)
 
 # Filter dataframe
-if (args.verbose):
-    print("DEBUG: sorting dataframe...")
-df_logs = df_logs.sort_values(by='timestamp')
-if (args.verbose):
-    print("DEBUG: filtering dataframe...")
-if not display_lb:
-    df_logs = df_logs[df_logs['src_ip'] != '168.63.129.16']
-if display_only_drops:
-    df_logs = df_logs[df_logs['action'] == 'D']
-if args.flow_state_filter:
-    df_logs = df_logs[(df_logs['state'] == args.flow_state_filter) | (df_logs['type'] != 'nsg')]
-if args.port_filter:
-    df_logs = df_logs[df_logs['dst_port'] == args.port_filter]
-if args.ip_filter:
-    df_logs = df_logs[(df_logs['src_ip'] == args.ip_filter) | (df_logs['dst_ip'] == args.ip_filter)]
-if args.protocol_filter:
-    df_logs = df_logs[df_logs['protocol'] == args.protocol_filter]
-if args.only_non_zero:
-    # df_logs = df_logs[(len(df_logs['bytes_src_to_dst']) > 0) & (len(df_logs['packets_src_to_dst']) > 0) & (len(df_logs['bytes_dst_to_src']) > 0) & (len(df_logs['packets_dst_to_src']) > 0)]
-    df_logs = df_logs[((df_logs['bytes_src_to_dst'].notnull()) & (df_logs['packets_src_to_dst'].notnull()) & (df_logs['bytes_dst_to_src'].notnull()) & (df_logs['packets_dst_to_src'].notnull())) | (df_logs['type'] != 'nsg')]
-if args.display_minutes:
-    # timestamp_limit = (pd.Timestamp.now()).tz_localize('UTC') - pd.Timedelta(args.display_minutes, 'minutes')
-    timestamp_limit = (pd.Timestamp.utcnow()) - pd.Timedelta(args.display_minutes, 'minutes')
-    if args.verbose:
-        print("DEBUG: filtering logs more recent than {0} (data type is {1})".format(str(timestamp_limit), str(type(timestamp_limit))))
-    # timestamp_limit = pd.to_datetime(timestamp_limit)
-    df_logs = df_logs[df_logs['timestamp'] > timestamp_limit ]
+if len(df_logs)>0:
+    try:
+        if (args.verbose):
+            print("DEBUG: sorting dataframe...")
+        df_logs = df_logs.sort_values(by='timestamp')
+    except Exception as e:
+        print("ERROR: Error sorting dataframe with timestamp column:", str(e))
+        pass
+    if (args.verbose):
+        print("DEBUG: filtering dataframe...")
+    try:
+        if not display_lb:
+            df_logs = df_logs[df_logs['src_ip'] != '168.63.129.16']
+    except Exception as e:
+        print("ERROR: Error filtering out LB IP addresses:", str(e))
+        pass
+    if display_only_drops:
+        df_logs = df_logs[df_logs['action'] == 'D']
+    if args.flow_state_filter:
+        df_logs = df_logs[(df_logs['state'] == args.flow_state_filter) | (df_logs['type'] != 'nsg')]
+    if args.port_filter:
+        df_logs = df_logs[df_logs['dst_port'] == args.port_filter]
+    if args.ip_filter:
+        df_logs = df_logs[(df_logs['src_ip'] == args.ip_filter) | (df_logs['dst_ip'] == args.ip_filter)]
+    if args.protocol_filter:
+        df_logs = df_logs[df_logs['protocol'] == args.protocol_filter]
+    if args.only_non_zero:
+        # df_logs = df_logs[(len(df_logs['bytes_src_to_dst']) > 0) & (len(df_logs['packets_src_to_dst']) > 0) & (len(df_logs['bytes_dst_to_src']) > 0) & (len(df_logs['packets_dst_to_src']) > 0)]
+        df_logs = df_logs[((df_logs['bytes_src_to_dst'].notnull()) & (df_logs['packets_src_to_dst'].notnull()) & (df_logs['bytes_dst_to_src'].notnull()) & (df_logs['packets_dst_to_src'].notnull())) | (df_logs['type'] != 'nsg')]
+    if args.no_counters:
+        non_counter_cols = [col for col in df_logs.columns if (not col.startswith('packets')) and (not col.startswith('bytes'))]
+        df_logs = df_logs[non_counter_cols]
+    if args.display_minutes:
+        # timestamp_limit = (pd.Timestamp.now()).tz_localize('UTC') - pd.Timedelta(args.display_minutes, 'minutes')
+        timestamp_limit = (pd.Timestamp.utcnow()) - pd.Timedelta(args.display_minutes, 'minutes')
+        if args.verbose:
+            print("DEBUG: filtering logs more recent than {0} (data type is {1})".format(str(timestamp_limit), str(type(timestamp_limit))))
+        # timestamp_limit = pd.to_datetime(timestamp_limit)
+        df_logs = df_logs[df_logs['timestamp'] > timestamp_limit ]
 
 # Debug info on dataframe
 if (args.verbose):

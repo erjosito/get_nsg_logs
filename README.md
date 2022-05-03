@@ -29,7 +29,7 @@ You can use the Python script in this repository (assuming you have the Python S
 git clone https://github.com/erjosito/get_nsg_logs
 ```
 
-You might to install the Python module for Azure Storage Blob:
+If you don't have the Azure Storage Blob and pandas Python modules, you need to install them:
 
 ```
 pip install azure-storage-blob pandas --user
@@ -74,7 +74,8 @@ optional arguments:
   --mode MODE           can be nsg,fw,both (default: nsg)
   --aggregate           prints byte/packet count aggregates (default: False)
   --no-output           does not print out any output, useful with --verbose flag (default: False)
-  --verbose             run in verbose mode (default: False)```
+  --verbose             run in verbose mode (default: False)
+```
 
 There is something you need to do before being able to access Azure Blob Storage: finding out the Azure Storage Account key. The script will read it from the environtment variable STORAGE_ACCOUNT_KEY, that you can set with this command:
 
