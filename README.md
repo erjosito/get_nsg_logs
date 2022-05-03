@@ -1,3 +1,7 @@
+# Version
+
+The latest version of this script works with Pandas dataframes and supports Azure Firewall logs sent to the same storage account (see parameter `mode`).
+
 # Reading NSG logs from Blob Storage
 
 You might have set your Azure Vnet, with some NSGs. You start rolling apps, to the point where you have many VMs, and many NSGs. Somebody makes an application upgrade, or installs a new application, but traffic is not flowing through. Which NSG is dropping traffic? Which TCP ports should be opened?
@@ -28,7 +32,7 @@ git clone https://github.com/erjosito/get_nsg_logs
 You might to install the Python module for Azure Storage Blob:
 
 ```
-pip install azure-storage-blob --user
+pip install azure-storage-blob pandas --user
 ```
 
 Now you can have a look at the different options:
