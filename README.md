@@ -71,11 +71,10 @@ optional arguments:
                         filter the output to a specific protocol (T/U/I)
   --nsg-name NSG_NAME_FILTER
                         filter the output to a specific NSG
-  --mode MODE           can be nsg,fw,both (default nsg)
-  --aggregate           run in verbose mode (default: False)
-  --no-output           run in verbose mode (default: False)
-  --verbose             run in verbose mode (default: False)
-```
+  --mode MODE           can be nsg,fw,both (default: nsg)
+  --aggregate           prints byte/packet count aggregates (default: False)
+  --no-output           does not print out any output, useful with --verbose flag (default: False)
+  --verbose             run in verbose mode (default: False)```
 
 There is something you need to do before being able to access Azure Blob Storage: finding out the Azure Storage Account key. The script will read it from the environtment variable STORAGE_ACCOUNT_KEY, that you can set with this command:
 
