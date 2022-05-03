@@ -75,14 +75,15 @@ optional arguments:
 
 There is something you need to do before being able to access Azure Blob Storage: finding out the Azure Storage Account key. The script will read it from the environtment variable STORAGE_ACCOUNT_KEY, that you can set with this command:
 
-```
-export STORAGE_ACCOUNT_KEY=$(az storage account keys list -n your_storage_account_name --query [0].value -o tsv)
+```bash
+storage_account_name=yourstorageaccount123
+export STORAGE_ACCOUNT_KEY=$(az storage account keys list -n $storage_account_name --query '[0].value' -o tsv)
 ```
 
 For example, in order to show dropped and allowed traffic of ingress NSG logs stored in the storage account `ernetworkhubdiag857`, excluding Azure LB probe traffic for the last 6 hours:
 
 ```
-$ python3 ./get_nsg_logs.py --account-name ernetworkhubdiag857 --display-hours 6 --display-direction in --display-allowed
+$ python3 ./get_nsg_logs.py --account-name $storage_account_name --display-hours 6 --display-direction in --display-allowed
 2018-09-21T09:49:57.3055150Z NVA-NSG DefaultRule_AllowVnetInBound A I 10.90.15.47 29014 10.139.149.70 23
 2018-09-21T09:49:57.3055150Z NVA-NSG DefaultRule_AllowVnetInBound A I 10.90.15.47 29014 10.139.149.70 23
 2018-09-21T09:49:57.3055150Z NVA-NSG DefaultRule_AllowVnetInBound A I 10.90.15.47 32069 10.139.149.70 23
@@ -94,7 +95,7 @@ $ python3 ./get_nsg_logs.py --account-name ernetworkhubdiag857 --display-hours 6
 If you are using the version 2 of the flow log export format, you can show some additional options:
 
 ```
-$ python3 ./get_nsg_logs.py --account-name fwtestdiag354 --version 2 --display-allowed --display-direction both --only-non-zero --port 80 --display-hours 2 --aggregate
+$ python3 ./get_nsg_logs.py --account-name $storage_account_name --version 2 --display-allowed --display-direction both --only-non-zero --port 80 --display-hours 2 --aggregate
 2019-10-16T22:20:16.9434260Z FWTESTVM-NSG DefaultRule_AllowInternetOutBound A O 192.168.1.4 tcp 39884 104.28.19.94 80 E src2dst: 6/419 dst2src: 4/629
 2019-10-16T21:32:16.8646597Z FWTESTVM-NSG DefaultRule_AllowInternetOutBound A O 192.168.1.4 tcp 54326 51.137.52.221 80 E src2dst: 17/1787 dst2src: 120/172007
 2019-10-16T21:32:16.8646597Z FWTESTVM-NSG DefaultRule_AllowInternetOutBound A O 192.168.1.4 tcp 34680 91.189.88.24 80 E src2dst: 25/1875 dst2src: 66/93416
@@ -128,7 +129,7 @@ In a separate screen you can capture the traffic. Here you have it for the examp
 You can see the TCP 3-way handshake (first 3 packets), the GET request (next 2 packets), the HTTP answer (next 2 packets), and the TCP finalization (last 3 packets). 10 packets in total. Let us check our NSG flows:
 
 ```
->python ./get_nsg_logs.py --account-name fwtestdiag354 --version 2 --display-allowed --display-direction out --only-non-zero --port 80 --aggregate --display-hours 2 --ip 104.28.19.94 --port 38264
+>python ./get_nsg_logs.py --account-name $storage_account_name --version 2 --display-allowed --display-direction out --only-non-zero --port 80 --aggregate --display-hours 2 --ip 104.28.19.94 --port 38264
 2019-10-17T07:12:17.6127249Z FWTESTVM-NSG DefaultRule_AllowInternetOutBound A O 192.168.1.4 tcp 38264 104.28.19.94 80 E src2dst: 6/419 dst2src: 4/629
 Totals src2dst -> 6 packets and 419 bytes
 Totals dst2src -> 4 packets and 629 bytes
@@ -175,7 +176,7 @@ Our capture shows 9 packets (3 for each hping3 SYN message):
 And our NSG flow counters show the new flows (with TCP source ports 2300, 2301 and 2302), with 3 packets for each flow. Note how the state is E:
 
 ```
-python ./get_nsg_logs.py --account-name fwtestdiag354 --version 2 --display-allowed --display-direction out --only-non-zero --port 80 --aggregate --ip 104.28.19.94
+python ./get_nsg_logs.py --account-name $storage_account_name --version 2 --display-allowed --display-direction out --only-non-zero --port 80 --aggregate --ip 104.28.19.94
 2019-10-17T06:33:17.5758719Z FWTESTVM-NSG DefaultRule_AllowInternetOutBound A O 192.168.1.4 tcp 56228 104.28.19.94 80 C src2dst: 6/420 dst2src: 8/4498
 2019-10-17T06:41:17.5858392Z FWTESTVM-NSG DefaultRule_AllowInternetOutBound A O 192.168.1.4 tcp 2301 104.28.19.94 80 E src2dst: 2/108 dst2src: 1/60
 2019-10-17T06:41:17.5858392Z FWTESTVM-NSG DefaultRule_AllowInternetOutBound A O 192.168.1.4 tcp 2300 104.28.19.94 80 E src2dst: 2/108 dst2src: 1/60
