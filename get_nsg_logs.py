@@ -40,13 +40,13 @@ parser.add_argument('--protocol', dest='protocol_filter', action='store',
 parser.add_argument('--nsg-name', dest='nsg_name_filter', action='store',
                     help='filter the output to a specific NSG')
 parser.add_argument('--mode', dest='mode', action='store', default='nsg',
-                    help='can be nsg,fw,both (default nsg)')
+                    help='can be nsg,fw,both (default: nsg)')
 parser.add_argument('--aggregate', dest='aggregate', action='store_true',
                     default=False,
-                    help='run in verbose mode (default: False)')
+                    help='prints byte/packet count aggregates (default: False)')
 parser.add_argument('--no-output', dest='no_output', action='store_true',
                     default=False,
-                    help='run in verbose mode (default: False)')
+                    help='does not print out any output, useful with --verbose flag (default: False)')
 parser.add_argument('--verbose', dest='verbose', action='store_true',
                     default=False,
                     help='run in verbose mode (default: False)')
