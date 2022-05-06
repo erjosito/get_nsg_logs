@@ -84,111 +84,31 @@ storage_account_name=yourstorageaccount123
 export STORAGE_ACCOUNT_KEY=$(az storage account keys list -n $storage_account_name --query '[0].value' -o tsv)
 ```
 
-For example, in order to show dropped and allowed traffic of ingress NSG logs stored in the storage account `ernetworkhubdiag857`, excluding Azure LB probe traffic for the last 6 hours:
+For example, in order to show dropped and allowed traffic of ingress NSG logs stored in a storage account (if following the previous instructions, stored in the variable `$storage_account_name`), excluding Azure LB probe traffic for the last 2 hours:
 
 ```
-$ python3 ./get_nsg_logs.py --account-name $storage_account_name --display-hours 6 --display-direction in --display-allowed
-2018-09-21T09:49:57.3055150Z NVA-NSG DefaultRule_AllowVnetInBound A I 10.90.15.47 29014 10.139.149.70 23
-2018-09-21T09:49:57.3055150Z NVA-NSG DefaultRule_AllowVnetInBound A I 10.90.15.47 29014 10.139.149.70 23
-2018-09-21T09:49:57.3055150Z NVA-NSG DefaultRule_AllowVnetInBound A I 10.90.15.47 32069 10.139.149.70 23
-2018-09-21T09:49:57.3055150Z NVA-NSG DefaultRule_AllowVnetInBound A I 10.90.15.47 29014 10.139.149.70 23
-2018-09-21T09:49:57.3055150Z NVA-NSG DefaultRule_AllowVnetInBound A I 10.90.15.47 29014 10.139.149.70 23
-2018-09-21T09:49:57.3055150Z NVA-NSG DefaultRule_AllowVnetInBound A I 10.90.15.47 32069 10.139.149.70 23
+$ python3 ./get_nsg_logs.py --account-name $storage_account_name --display-hours 2 --display-direction in --display-allowed
+                               timestamp type  resource                               rule state       src_ip       dst_ip src_port dst_port protocol direction action
+1276 2022-05-06 07:08:02.967603300+00:00  nsg  FLOWLOGS      DefaultRule_AllowVnetOutBound     E  192.168.1.4  192.168.1.6    33286     1433        T         O      A
+1262 2022-05-06 07:08:02.967603300+00:00  nsg  FLOWLOGS  DefaultRule_AllowInternetOutBound     B  192.168.1.4  13.69.67.61    36552      443        T         O      A
+1261 2022-05-06 07:08:02.967603300+00:00  nsg  FLOWLOGS  DefaultRule_AllowInternetOutBound     E  192.168.1.4  13.69.67.61    36516      443        T         O      A
+1277 2022-05-06 07:08:02.967603300+00:00  nsg  FLOWLOGS      DefaultRule_AllowVnetOutBound     B  192.168.1.4  192.168.1.7    55280     1433        T         O      A
+1275 2022-05-06 07:08:02.967603300+00:00  nsg  FLOWLOGS      DefaultRule_AllowVnetOutBound     E  192.168.1.4  192.168.1.5    58948       80        T         O      A
+...
 ```
 
-If you are using the version 2 of the flow log export format, you can show some additional options:
+Another example is showing logs captured to troubleshoot communication between specific machines on a specific port (on the last 3 minutes to reduce output):
 
 ```
-$ python3 ./get_nsg_logs.py --account-name $storage_account_name --version 2 --display-allowed --display-direction both --only-non-zero --port 80 --display-hours 2 --aggregate
-2019-10-16T22:20:16.9434260Z FWTESTVM-NSG DefaultRule_AllowInternetOutBound A O 192.168.1.4 tcp 39884 104.28.19.94 80 E src2dst: 6/419 dst2src: 4/629
-2019-10-16T21:32:16.8646597Z FWTESTVM-NSG DefaultRule_AllowInternetOutBound A O 192.168.1.4 tcp 54326 51.137.52.221 80 E src2dst: 17/1787 dst2src: 120/172007
-2019-10-16T21:32:16.8646597Z FWTESTVM-NSG DefaultRule_AllowInternetOutBound A O 192.168.1.4 tcp 34680 91.189.88.24 80 E src2dst: 25/1875 dst2src: 66/93416
-Totals src2dst -> 48 packets and 4081 bytes
-Totals dst2src -> 190 packets and 266052 bytes
+❯ python3 ./get_nsg_logs.py --account-name $storage_account_name --mode=nsg --display-hours 1 --display-allowed --display-minutes 3 --ip 192.168.1.4 --ip2 192.168.1.5 --aggregate
+                 timestamp              type  resource              rule             state packets_src_to_dst bytes_src_to_dst packets_dst_to_src bytes_dst_to_src    src_ip       dst_ip    src_port dst_port protocol direction action
+579 2022-05-06 07:18:34.404934100+00:00  nsg  FLOWLOGS  DefaultRule_AllowVnetInBound    B                                                                           192.168.1.4  192.168.1.5   60142     80        T         I       A  
+580 2022-05-06 07:18:34.404934100+00:00  nsg  FLOWLOGS  DefaultRule_AllowVnetInBound    E           1                74                 1                54         192.168.1.4  192.168.1.5   60142     80        T         I       A  
+bytes_src_to_dst      74
+packets_src_to_dst     1
+bytes_dst_to_src      54
+packets_dst_to_src     1
+dtype: object
 ```
 
-# Testing the tool
-
-Let us generate a typical HTTP request, we will use the service ifconfig.co:
-
-```
-curl -s4 ifconfig.co
-```
-
-In a separate screen you can capture the traffic. Here you have it for the example above (captured with tcpdump in a Linux VM in Azure):
-
-```
-07:11:16.387239 IP fwtestvm.38264 > 104.28.19.94.http: Flags [S], seq 432244736, win 64240, options [mss 1460,sackOK,TS val 3932777591 ecr 0,nop,wscale 7], length 0
-07:11:16.399859 IP 104.28.19.94.http > fwtestvm.38264: Flags [S.], seq 1557095350, ack 432244737, win 29200, options [mss 1400,nop,nop,sackOK,nop,wscale 10], length 0
-07:11:16.399890 IP fwtestvm.38264 > 104.28.19.94.http: Flags [.], ack 1, win 502, length 0
-07:11:16.399991 IP fwtestvm.38264 > 104.28.19.94.http: Flags [P.], seq 1:76, ack 1, win 502, length 75: HTTP: GET / HTTP/1.1
-07:11:16.412831 IP 104.28.19.94.http > fwtestvm.38264: Flags [.], ack 76, win 29, length 0
-07:11:16.457021 IP 104.28.19.94.http > fwtestvm.38264: Flags [P.], seq 1:390, ack 76, win 29, length 389: HTTP: HTTP/1.1 200 OK
-07:11:16.457045 IP fwtestvm.38264 > 104.28.19.94.http: Flags [.], ack 390, win 501, length 0
-07:11:16.457194 IP fwtestvm.38264 > 104.28.19.94.http: Flags [F.], seq 76, ack 390, win 501, length 0
-07:11:16.470909 IP 104.28.19.94.http > fwtestvm.38264: Flags [F.], seq 390, ack 77, win 29, length 0
-07:11:16.470931 IP fwtestvm.38264 > 104.28.19.94.http: Flags [.], ack 391, win 501, length 0
-```
-
-You can see the TCP 3-way handshake (first 3 packets), the GET request (next 2 packets), the HTTP answer (next 2 packets), and the TCP finalization (last 3 packets). 10 packets in total. Let us check our NSG flows:
-
-```
->python ./get_nsg_logs.py --account-name $storage_account_name --version 2 --display-allowed --display-direction out --only-non-zero --port 80 --aggregate --display-hours 2 --ip 104.28.19.94 --port 38264
-2019-10-17T07:12:17.6127249Z FWTESTVM-NSG DefaultRule_AllowInternetOutBound A O 192.168.1.4 tcp 38264 104.28.19.94 80 E src2dst: 6/419 dst2src: 4/629
-Totals src2dst -> 6 packets and 419 bytes
-Totals dst2src -> 4 packets and 629 bytes
-```
-
-10 packets: Check! All of the packets, including the first SYN and the last ACK were captured in the flow logs. Let us check whether half-open TCP connections are verified too. We will use the tool hping3 (on Ubuntu you can install it with `sudo apt install -y hping3`):
-
-```
-$ sudo hping3 -V -S -p 80 104.28.19.94
-using eth0, addr: 192.168.1.4, MTU: 1500
-HPING 104.28.19.94 (eth0 104.28.19.94): S set, 40 headers + 0 data bytes
-
-len=46 ip=104.28.19.94 ttl=52 DF id=0 tos=0 iplen=44
-sport=80 flags=SA seq=0 win=29200 rtt=15.1 ms
-seq=554566472 ack=1426251946 sum=cc85 urp=0
-
-len=46 ip=104.28.19.94 ttl=52 DF id=0 tos=0 iplen=44
-sport=80 flags=SA seq=1 win=29200 rtt=14.7 ms
-seq=3991602591 ack=1322897034 sum=dfce urp=0
-
-len=46 ip=104.28.19.94 ttl=52 DF id=0 tos=0 iplen=44
-sport=80 flags=SA seq=2 win=29200 rtt=14.6 ms
-seq=2340604942 ack=1706818275 sum=9d27 urp=0
-
-^C
---- 104.28.19.94 hping statistic ---
-3 packets transmitted, 3 packets received, 0% packet loss
-round-trip min/avg/max = 14.6/14.8/15.1 ms
-```
-
-Our capture shows 9 packets (3 for each hping3 SYN message):
-
-```
-6:40:11.581669 IP fwtestvm.2300 > 104.28.19.94.http: Flags [S], seq 1426251945, win 512, length 0
-06:40:11.593977 IP 104.28.19.94.http > fwtestvm.2300: Flags [S.], seq 554566472, ack 1426251946, win 29200, options [mss 1400], length 0
-06:40:11.593997 IP fwtestvm.2300 > 104.28.19.94.http: Flags [R], seq 1426251946, win 0, length 0
-06:40:12.582130 IP fwtestvm.2301 > 104.28.19.94.http: Flags [S], seq 1322897033, win 512, length 0
-06:40:12.594818 IP 104.28.19.94.http > fwtestvm.2301: Flags [S.], seq 3991602591, ack 1322897034, win 29200, options [mss 1400], length 0
-06:40:12.594848 IP fwtestvm.2301 > 104.28.19.94.http: Flags [R], seq 1322897034, win 0, length 006:40:13.582315 IP fwtestvm.2302 > 104.28.19.94.http: Flags [S], seq 1706818274, win 512, length 0
-06:40:13.595058 IP 104.28.19.94.http > fwtestvm.2302: Flags [S.], seq 2340604942, ack 1706818275, win 29200, options [mss 1400], length 0
-06:40:13.595081 IP fwtestvm.2302 > 104.28.19.94.http: Flags [R], seq 1706818275, win 0, length 0
-```
-
-And our NSG flow counters show the new flows (with TCP source ports 2300, 2301 and 2302), with 3 packets for each flow. Note how the state is E:
-
-```
-python ./get_nsg_logs.py --account-name $storage_account_name --version 2 --display-allowed --display-direction out --only-non-zero --port 80 --aggregate --ip 104.28.19.94
-2019-10-17T06:33:17.5758719Z FWTESTVM-NSG DefaultRule_AllowInternetOutBound A O 192.168.1.4 tcp 56228 104.28.19.94 80 C src2dst: 6/420 dst2src: 8/4498
-2019-10-17T06:41:17.5858392Z FWTESTVM-NSG DefaultRule_AllowInternetOutBound A O 192.168.1.4 tcp 2301 104.28.19.94 80 E src2dst: 2/108 dst2src: 1/60
-2019-10-17T06:41:17.5858392Z FWTESTVM-NSG DefaultRule_AllowInternetOutBound A O 192.168.1.4 tcp 2300 104.28.19.94 80 E src2dst: 2/108 dst2src: 1/60
-2019-10-17T06:41:17.5858392Z FWTESTVM-NSG DefaultRule_AllowInternetOutBound A O 192.168.1.4 tcp 2302 104.28.19.94 80 E src2dst: 2/108 dst2src: 1/60
-Totals src2dst -> 12 packets and 744 bytes
-Totals dst2src -> 11 packets and 4678 bytes
-```
-
-# How long do you have to wait?
-
-For new flows the information should be in the logs in around 1 min.
+Happy troubleshooting!

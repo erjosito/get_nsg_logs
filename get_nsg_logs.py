@@ -21,7 +21,7 @@ parser.add_argument('--display-allowed', dest='display_allowed', action='store_t
                     default=False,
                     help='display as well flows allowed by NSGs (default: False)')
 parser.add_argument('--display-direction', dest='display_direction', action='store', default='in',
-                    help='display flows only in a specific direction. Can be in, out, or both (default in)')
+                    help='display flows only in a specific direction. Can be in, out, or both (default both)')
 parser.add_argument('--display-hours', dest='display_hours', action='store', type=int, default=1,
                     help='How many hours to look back (default: 1)')
 parser.add_argument('--display-minutes', dest='display_minutes', action='store', type=int, default=0,
@@ -36,6 +36,8 @@ parser.add_argument('--flow-state', dest='flow_state_filter', action='store',
                     help='filter the output to a specific v2 flow type (B/C/E)')
 parser.add_argument('--ip', dest='ip_filter', action='store',
                     help='filter the output to a specific IP address')
+parser.add_argument('--ip2', dest='ip2_filter', action='store',
+                    help='additional IP address filter')
 parser.add_argument('--port', dest='port_filter', action='store',
                     help='filter the output to a specific TCP/UDP port')
 parser.add_argument('--protocol', dest='protocol_filter', action='store',
@@ -54,21 +56,6 @@ parser.add_argument('--verbose', dest='verbose', action='store_true',
                     default=False,
                     help='run in verbose mode (default: False)')
 args = parser.parse_args()
-
-# Calculate the time delta in minutes between a timestamp and now
-def get_minutes_delta (log_timestamp):
-        try:
-            log_date_split = log_timestamp.split('.')
-            log_date = log_date_split[0] + "+00:00"
-            fmt = '%Y-%m-%dT%H:%M:%S%z'
-            tstamp1 = datetime.strptime(log_date, fmt)
-            tstamp2 = datetime.now(timezone.utc)
-            td = tstamp2 - tstamp1
-            td_min = int(round(td.total_seconds() / 60))
-            return td_min
-        except Exception as e:
-            print("Error fetching logs from container", nsg_container_name, '-', str(e))
-            return 0
 
 # Set to true if only packet drops should be displayed
 display_only_drops = not args.display_allowed
@@ -131,22 +118,22 @@ def get_blob_client(account_name, account_key):
     try:
         return BlobServiceClient(account_name + ".blob.core.windows.net", credential=account_key)
     except Exception as e:
-        print("Could not create the blob service client", '-', str(e))
+        print("ERROR: Could not create the blob service client to storage account", storage_account, '-', str(e))
         exit(1)
 
 def get_container_client(block_blob_service, container_name):
     try:
         return block_blob_service.get_container_client(container_name)
     except Exception as e:
-        print("Could not create container client for container", container_name, '-', str(e))
-        exit(1)
+        print("ERROR: Could not create container client for container", container_name, '-', str(e))
+        return None
 
 def get_blob_list(container_client):
     try:
         return list(container_client.list_blobs())
     except Exception as e:
-        print("Error fetching logs from container", str(e))
-        exit(1)
+        print("ERROR: Error fetching blob list from container", str(e))
+        return None
 
 def get_resource_list(blob_list):
     # Get a list of resources
@@ -338,7 +325,7 @@ def process_flowlog_records(data):
         print("DEBUG: {0} records and {1} flows added to data frame in {2} seconds".format(record_counter, flow_counter, time.time()-process_start_time))
     return df_logs
 
-
+# Go over each provided resource (NSG or FW), get the blobs, and send each blob to the corresponding processing routing (NSG or FW)
 def process_resources (resource_list, blob_list, container_client):
     # Variable that will be returned
     df_logs = pd.DataFrame()
@@ -355,16 +342,16 @@ def process_resources (resource_list, blob_list, container_client):
                 blob_name_parts = this_blob.name.split('/')
                 blob_resource  = blob_name_parts[8]
                 blob_time = "/".join(blob_name_parts[9:14])
-                # if args.verbose:
-                #     print('DEBUG: Looking at blob', this_blob.name, '- NSG:', blob_nsg, '- Time:', blob_time)
                 if blob_resource == resource:
                     date_list.append(blob_time)
-            date_list = sorted(date_list, reverse=True)
-            date_list = date_list[:display_hours]
+            date_list = list(set(date_list))  # Remove duplicates
+            full_date_list = sorted(date_list, reverse=True)
+            filtered_date_list = full_date_list[:display_hours]
             if args.verbose:
-                print('DEBUG: Hourly blobs found for resource', resource, ':', date_list, '- display_hours: ', display_hours)
+                print('DEBUG: Hourly blobs found for resource', resource, ':', filtered_date_list, '- display_hours: ', display_hours)
+                print('DEBUG: Full date list for resource', resource, ':', full_date_list)
 
-            for thisDate in date_list:
+            for thisDate in filtered_date_list:
                 # Get the matching blobs for a given resource and date
                 blob_matches = []
                 for this_blob in blob_list:
@@ -382,6 +369,8 @@ def process_resources (resource_list, blob_list, container_client):
                     if os.path.exists(local_filename):
                         os.remove(local_filename)
                     blob_client = container_client.get_blob_client(blob_name)
+                    if args.verbose:
+                        print('DEBUG: Blob has', str(blob_client.get_blob_properties().size), 'bytes')
                     with open(local_filename, "wb") as download_file:
                         download_file.write(blob_client.download_blob().readall())
                     # We load each blob as text
@@ -435,16 +424,18 @@ block_blob_service = get_blob_client(account_name, account_key)
 if (args.mode == 'nsg') or (args.mode == 'both'):
     nsg_container_client = get_container_client(block_blob_service, nsg_container_name)
     nsg_blob_list = get_blob_list(nsg_container_client)
-    nsg_list = get_resource_list (nsg_blob_list)
-    nsg_logs = process_resources (nsg_list, nsg_blob_list, nsg_container_client)
-    df_logs = pd.concat([df_logs, nsg_logs], ignore_index=True)
+    if nsg_blob_list:
+        nsg_list = get_resource_list (nsg_blob_list)
+        nsg_logs = process_resources (nsg_list, nsg_blob_list, nsg_container_client)
+        df_logs = pd.concat([df_logs, nsg_logs], ignore_index=True)
 
 if (args.mode == 'fw') or (args.mode == 'both'):
     fw_container_client = get_container_client(block_blob_service, fw_container_name)
     fw_blob_list = get_blob_list(fw_container_client)
-    fw_list = get_resource_list (fw_blob_list)
-    fw_logs = process_resources (fw_list, fw_blob_list, fw_container_client)
-    df_logs = pd.concat([df_logs, fw_logs], ignore_index=True)
+    if fw_blob_list:
+        fw_list = get_resource_list (fw_blob_list)
+        fw_logs = process_resources (fw_list, fw_blob_list, fw_container_client)
+        df_logs = pd.concat([df_logs, fw_logs], ignore_index=True)
 
 # Filter dataframe
 if len(df_logs)>0:
@@ -467,8 +458,21 @@ if len(df_logs)>0:
         df_logs = df_logs[df_logs['action'] == 'D']
     if args.flow_state_filter:
         df_logs = df_logs[(df_logs['state'] == args.flow_state_filter) | (df_logs['type'] != 'nsg')]
+    if display_direction and not (display_direction == "both"):
+        if display_direction == "in":
+            df_logs = df_logs[(df_logs['direction'] == 'I') | (df_logs['type'] != 'nsg')]
+        elif display_direction == "out":
+            df_logs = df_logs[(df_logs['direction'] == 'O') | (df_logs['type'] != 'nsg')]
     if args.port_filter:
         df_logs = df_logs[df_logs['dst_port'] == args.port_filter]
+    if (args.ip_filter and not args.ip2_filter) or (not args.ip_filter and args.ip2_filter):
+        if args.ip_filter:
+            ip_filter=args.ip_filter
+        else:
+            ip_filter=args.ip2_filter
+        df_logs = df_logs[(df_logs['src_ip'] == ip_filter) | (df_logs['dst_ip'] == ip_filter)]
+    if args.ip_filter and args.ip2_filter:
+        df_logs = df_logs[((df_logs['src_ip'] == args.ip_filter) & (df_logs['dst_ip'] == args.ip2_filter)) | ((df_logs['src_ip'] == args.ip2_filter) & (df_logs['dst_ip'] == args.ip_filter))]
     if args.ip_filter:
         df_logs = df_logs[(df_logs['src_ip'] == args.ip_filter) | (df_logs['dst_ip'] == args.ip_filter)]
     if args.protocol_filter:
@@ -483,7 +487,7 @@ if len(df_logs)>0:
         # timestamp_limit = (pd.Timestamp.now()).tz_localize('UTC') - pd.Timedelta(args.display_minutes, 'minutes')
         timestamp_limit = (pd.Timestamp.utcnow()) - pd.Timedelta(args.display_minutes, 'minutes')
         if args.verbose:
-            print("DEBUG: filtering logs more recent than {0} (data type is {1})".format(str(timestamp_limit), str(type(timestamp_limit))))
+            print("DEBUG: filtering logs more recent than {0}".format(str(timestamp_limit)))
         # timestamp_limit = pd.to_datetime(timestamp_limit)
         df_logs = df_logs[df_logs['timestamp'] > timestamp_limit ]
 
@@ -516,166 +520,3 @@ if not args.no_output:
 # Print elapsed time
 if args.verbose:
     print('DEBUG: Execution time:', time.time() - start_time , 'seconds')
-
-# for nsg_name in nsgList:
-#     # Get a list of days for a given NSG
-#     # List comprehensions do not seem to work (TypeError: 'ListGenerator' object is not subscriptable)
-#     # dayList = [nsg_blob_list[i].split('/')[11] for i in nsg_blob_list if nsg_blob_list[i].split('/')[8] == nsg_name]
-#     date_list = []
-#     for this_blob in nsg_blob_list:
-#         blob_name_parts = this_blob.name.split('/')
-#         blob_nsg  = blob_name_parts[8]
-#         blob_time = "/".join(blob_name_parts[9:14])
-#         # if args.verbose:
-#         #     print('DEBUG: Looking at blob', this_blob.name, '- NSG:', blob_nsg, '- Time:', blob_time)
-#         if blob_nsg == nsg_name:
-#             date_list.append(blob_time)
-#     date_list = sorted(date_list, reverse=True)
-#     date_list = date_list[:display_hours]
-#     if args.verbose:
-#         print('DEBUG: Hourly blobs found for NSG', nsg_name, ':', date_list, '- display_hours: ', display_hours)
-
-#     for thisDate in date_list:
-#         # Get the corresponding blob for a given NSG and date
-#         blob_matches = []
-#         for this_blob in nsg_blob_list:
-#             blob_name_parts = this_blob.name.split('/')
-#             blob_nsg  = blob_name_parts[8]
-#             blob_time = "/".join(blob_name_parts[9:14])
-#             if blob_nsg == nsg_name and blob_time == thisDate:
-#                 blob_matches.append(this_blob.name)
-
-#         for blob_name in blob_matches:
-#             if args.verbose:
-#                 print('DEBUG: Reading blob', blob_name)
-#             local_filename = "/tmp/flowlog_tmp.json"
-#             if os.path.exists(local_filename):
-#                 os.remove(local_filename)
-#             blob_client = nsg_container_client.get_blob_client(blob_name)
-#             with open(local_filename, "wb") as download_file:
-#                 download_file.write(blob_client.download_blob().readall())
-#             # block_blob_service.get_blob_to_path(nsg_container_name, blob_name, local_filename)
-#             text_data=open(local_filename).read()
-#             try:
-#                 data = json.loads(text_data)
-#             except:
-#                 print("Could not process JSON:", text_data)
-#                 exit(1)
-#             for record in data['records']:
-#                 for rule in record['properties']['flows']:
-#                     for flow in rule['flows']:
-#                         # Version 1
-#                         for flowtuple in flow['flowTuples']:
-#                             if args.version == 1:
-#                                 tuple_values = flowtuple.split(',')
-#                                 src_ip=tuple_values[1]
-#                                 dst_ip=tuple_values[2]
-#                                 src_port=tuple_values[3]
-#                                 dst_port=tuple_values[4]
-#                                 protocol=tuple_values[5]
-#                                 direction=tuple_values[6]
-#                                 action=tuple_values[7]
-#                                 display_record = False
-#                                 if action=='D' or not display_only_drops:
-#                                     if (direction == 'I' and display_direction == 'in') or (direction == 'O' and display_direction == 'out') or (display_direction == 'both'):
-#                                             if src_ip != "168.63.129.16" or display_lb == True:
-#                                                 display_record = True
-#                                 if display_minutes == 0:
-#                                     display_record = True
-#                                 else:
-#                                     td_mins = get_minutes_delta(record['time'])
-#                                     print ("Time delta:", str(td_mins))
-#                                     if td_mins <= display_minutes:
-#                                         display_record = True
-#                                     else:
-#                                         display_record = False
-#                                 if display_record:
-#                                     print(record['time'], nsg_name, rule['rule'], action, direction, src_ip, src_port, dst_ip, dst_port)
-#                             # Version 2
-#                             else:
-#                                 tuple_values = flowtuple.split(',')
-#                                 src_ip=tuple_values[1]
-#                                 dst_ip=tuple_values[2]
-#                                 src_port=tuple_values[3]
-#                                 dst_port=tuple_values[4]
-#                                 protocol=tuple_values[5]
-#                                 direction=tuple_values[6]
-#                                 action=tuple_values[7]
-#                                 try:
-#                                     state=tuple_values[8]
-#                                 except:
-#                                     state=""
-#                                 try:
-#                                     packets_src_to_dst=tuple_values[9]
-#                                 except:
-#                                     packets_src_to_dst=""
-#                                 try:
-#                                     bytes_src_to_dst=tuple_values[10]
-#                                 except:
-#                                     bytes_src_to_dst=""
-#                                 try:
-#                                     packets_dst_to_src=tuple_values[11]
-#                                 except:
-#                                     packets_dst_to_src=""
-#                                 try:
-#                                     bytes_dst_to_src=tuple_values[12]
-#                                 except:
-#                                     bytes_dst_to_src=""
-#                                 display_record = False
-#                                 if action=='D' or not display_only_drops:
-#                                     if (direction == 'I' and display_direction == 'in') or (direction == 'O' and display_direction == 'out') or (display_direction == 'both'):
-#                                         if src_ip != "168.63.129.16" or display_lb == True:
-#                                             counters_not_zero = (len(packets_src_to_dst) + len(packets_dst_to_src) + len(bytes_src_to_dst) + len(bytes_dst_to_src) > 0)
-#                                             if ((not args.only_non_zero) or counters_not_zero):
-#                                                 if ((not args.flow_state_filter) or state.lower() == args.flow_state_filter.lower()):
-#                                                     if ((not args.ip_filter) or (src_ip == args.ip_filter or dst_ip == args.ip_filter)):
-#                                                         if ((not args.port_filter) or (src_port == args.port_filter or dst_port == args.port_filter)):
-#                                                             if ((not args.nsg_name_filter) or (nsg_name.lower() == args.nsg_name_filter.lower())):
-#                                                                 display_record = True
-#                                 if display_minutes == 0:
-#                                     display_record = True
-#                                 else:
-#                                     td_mins = get_minutes_delta(record['time'])
-#                                     # print ("Time delta:", str(td_mins))
-#                                     if td_mins <= display_minutes:
-#                                         display_record = True
-#                                     else:
-#                                         display_record = False
-#                                 if display_record:
-#                                     if args.verbose:
-#                                         print('DEBUG: Printing data for flow tuple:', flowtuple)
-#                                         # print('DEBUG: Previous tuple contained in this record:', record)
-#                                     traffic_info = 'src2dst: ' + packets_src_to_dst + '/' + bytes_src_to_dst + ' dst2src: ' + packets_dst_to_src + '/' + bytes_dst_to_src
-#                                     #traffic_info = 'src2dst: ' + packets_src_to_dst + '/' + bytes_src_to_dst + ' dst2src: ' + packets_dst_to_src + '/' + bytes_dst_to_src + ' - '+str(len(packets_src_to_dst))+'/'+str(len(bytes_src_to_dst))+'/'+str(len(packets_dst_to_src))+'/'+str(len(bytes_dst_to_src))
-#                                     if protocol=='T':
-#                                         protocol='tcp'
-#                                     else:
-#                                         protocol='udp'
-#                                     print(record['time'], nsg_name, rule['rule'], action, direction, src_ip, protocol, src_port, dst_ip, dst_port, state, traffic_info)
-#                                     if args.aggregate:
-#                                         # Convert counters to integer
-#                                         if packets_src_to_dst.isnumeric():
-#                                             packets_src_to_dst = int(packets_src_to_dst)
-#                                         else:
-#                                             packets_src_to_dst = 0
-#                                         if packets_dst_to_src.isnumeric():
-#                                             packets_dst_to_src = int(packets_dst_to_src)
-#                                         else:
-#                                             packets_dst_to_src = 0
-#                                         if bytes_src_to_dst.isnumeric():
-#                                             bytes_src_to_dst = int(bytes_src_to_dst)
-#                                         else:
-#                                             bytes_src_to_dst = 0
-#                                         if bytes_dst_to_src.isnumeric():
-#                                             bytes_dst_to_src = int(bytes_dst_to_src)
-#                                         else:
-#                                             bytes_dst_to_src = 0
-#                                         # Add to aggregates    
-#                                         packets_src_to_dst_aggr += int(packets_src_to_dst)
-#                                         bytes_src_to_dst_aggr += int(bytes_src_to_dst)
-#                                         packets_dst_to_src_aggr += int(packets_dst_to_src)
-#                                         bytes_dst_to_src_aggr += int(bytes_dst_to_src)
-# if (args.aggregate and args.version == 2):
-#     print('Totals src2dst ->', packets_src_to_dst_aggr, "packets and", bytes_src_to_dst_aggr, "bytes")
-#     print('Totals dst2src ->', packets_dst_to_src_aggr, "packets and", bytes_dst_to_src_aggr, "bytes")
-
