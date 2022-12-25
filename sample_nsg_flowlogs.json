@@ -1,0 +1,693 @@
+{
+    "records": [
+        {
+            "time": "2022-05-02T21:00:37.7887149Z",
+            "systemId": "54b8986c-57c9-4e15-8869-1b8a6c082b1a",
+            "macAddress": "002248814162",
+            "category": "NetworkSecurityGroupFlowEvent",
+            "resourceId": "/SUBSCRIPTIONS/E7DA9914-9B05-4891-893C-546CB7B0422E/RESOURCEGROUPS/RSVMSS/PROVIDERS/MICROSOFT.NETWORK/NETWORKSECURITYGROUPS/NVA-NSG",
+            "operationName": "NetworkSecurityGroupFlowEvents",
+            "properties": {
+                "Version": 2,
+                "flows": [
+                    {
+                        "rule": "UserRule_Webout",
+                        "flows": [
+                            {
+                                "mac": "002248814162",
+                                "flowTuples": [
+                                    "1651525202,10.1.2.4,20.61.101.39,50030,443,T,O,A,B,,,,",
+                                    "1651525205,10.1.2.4,20.61.101.39,50034,443,T,O,A,B,,,,",
+                                    "1651525205,10.1.2.4,52.236.186.216,42548,443,T,O,A,B,,,,",
+                                    "1651525206,10.1.2.4,20.61.101.39,50040,443,T,O,A,B,,,,",
+                                    "1651525206,10.1.2.4,185.199.108.133,57378,443,T,O,A,B,,,,",
+                                    "1651525207,10.1.2.4,20.61.101.39,50054,443,T,O,A,B,,,,",
+                                    "1651525208,10.1.2.4,20.61.101.39,50058,443,T,O,A,B,,,,",
+                                    "1651525208,10.1.2.4,20.61.101.39,50030,443,T,O,A,E,10,3205,10,6104",
+                                    "1651525210,10.1.2.4,20.61.101.39,50034,443,T,O,A,E,11,3376,10,6384",
+                                    "1651525211,10.1.2.4,20.61.101.39,50040,443,T,O,A,E,11,3416,10,6279",
+                                    "1651525211,10.1.2.4,185.199.108.133,57378,443,T,O,A,E,9,1234,12,5541",
+                                    "1651525212,10.1.2.4,20.61.101.39,50054,443,T,O,A,E,11,3411,11,7275",
+                                    "1651525213,10.1.2.4,20.61.101.39,50058,443,T,O,A,E,11,3416,10,6294"
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "time": "2022-05-02T21:04:37.8409590Z",
+            "systemId": "54b8986c-57c9-4e15-8869-1b8a6c082b1a",
+            "macAddress": "002248814162",
+            "category": "NetworkSecurityGroupFlowEvent",
+            "resourceId": "/SUBSCRIPTIONS/E7DA9914-9B05-4891-893C-546CB7B0422E/RESOURCEGROUPS/RSVMSS/PROVIDERS/MICROSOFT.NETWORK/NETWORKSECURITYGROUPS/NVA-NSG",
+            "operationName": "NetworkSecurityGroupFlowEvents",
+            "properties": {
+                "Version": 2,
+                "flows": [
+                    {
+                        "rule": "UserRule_Webout",
+                        "flows": [
+                            {
+                                "mac": "002248814162",
+                                "flowTuples": [
+                                    "1651525427,10.1.2.4,52.236.186.216,42548,443,T,O,A,C,19,153863,22,6884",
+                                    "1651525448,10.1.2.4,52.236.186.216,42548,443,T,O,A,E,0,0,0,0"
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "time": "2022-05-02T21:05:37.8500764Z",
+            "systemId": "54b8986c-57c9-4e15-8869-1b8a6c082b1a",
+            "macAddress": "002248814162",
+            "category": "NetworkSecurityGroupFlowEvent",
+            "resourceId": "/SUBSCRIPTIONS/E7DA9914-9B05-4891-893C-546CB7B0422E/RESOURCEGROUPS/RSVMSS/PROVIDERS/MICROSOFT.NETWORK/NETWORKSECURITYGROUPS/NVA-NSG",
+            "operationName": "NetworkSecurityGroupFlowEvents",
+            "properties": {
+                "Version": 2,
+                "flows": [
+                    {
+                        "rule": "UserRule_Webout",
+                        "flows": [
+                            {
+                                "mac": "002248814162",
+                                "flowTuples": [
+                                    "1651525501,10.1.2.4,13.69.114.0,49002,443,T,O,A,B,,,,",
+                                    "1651525502,10.1.2.4,13.69.114.0,49014,443,T,O,A,B,,,,",
+                                    "1651525503,10.1.2.4,13.69.114.0,49018,443,T,O,A,B,,,,",
+                                    "1651525504,10.1.2.4,185.199.110.133,52380,443,T,O,A,B,,,,",
+                                    "1651525505,10.1.2.4,13.69.114.0,49024,443,T,O,A,B,,,,",
+                                    "1651525505,10.1.2.4,13.69.114.0,49028,443,T,O,A,B,,,,",
+                                    "1651525507,10.1.2.4,13.69.114.0,49002,443,T,O,A,E,10,3205,9,6047",
+                                    "1651525508,10.1.2.4,13.69.114.0,49014,443,T,O,A,E,11,3376,10,6372",
+                                    "1651525509,10.1.2.4,13.69.114.0,49018,443,T,O,A,E,11,3416,10,6282",
+                                    "1651525509,10.1.2.4,185.199.110.133,52380,443,T,O,A,E,9,1234,12,5541",
+                                    "1651525510,10.1.2.4,13.69.114.0,49024,443,T,O,A,E,11,3411,11,7263",
+                                    "1651525511,10.1.2.4,13.69.114.0,49028,443,T,O,A,E,11,3416,10,6282"
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "time": "2022-05-02T21:07:37.8434717Z",
+            "systemId": "54b8986c-57c9-4e15-8869-1b8a6c082b1a",
+            "macAddress": "002248814162",
+            "category": "NetworkSecurityGroupFlowEvent",
+            "resourceId": "/SUBSCRIPTIONS/E7DA9914-9B05-4891-893C-546CB7B0422E/RESOURCEGROUPS/RSVMSS/PROVIDERS/MICROSOFT.NETWORK/NETWORKSECURITYGROUPS/NVA-NSG",
+            "operationName": "NetworkSecurityGroupFlowEvents",
+            "properties": {
+                "Version": 2,
+                "flows": [
+                    {
+                        "rule": "UserRule_Webout",
+                        "flows": [
+                            {
+                                "mac": "002248814162",
+                                "flowTuples": [
+                                    "1651525628,10.1.2.4,40.118.73.208,35054,443,T,O,A,B,,,,",
+                                    "1651525633,10.1.2.4,40.118.73.208,35054,443,T,O,A,E,9,1445,18,18733"
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "time": "2022-05-02T21:08:37.8447016Z",
+            "systemId": "54b8986c-57c9-4e15-8869-1b8a6c082b1a",
+            "macAddress": "002248814162",
+            "category": "NetworkSecurityGroupFlowEvent",
+            "resourceId": "/SUBSCRIPTIONS/E7DA9914-9B05-4891-893C-546CB7B0422E/RESOURCEGROUPS/RSVMSS/PROVIDERS/MICROSOFT.NETWORK/NETWORKSECURITYGROUPS/NVA-NSG",
+            "operationName": "NetworkSecurityGroupFlowEvents",
+            "properties": {
+                "Version": 2,
+                "flows": [
+                    {
+                        "rule": "DefaultRule_DenyAllInBound",
+                        "flows": [
+                            {
+                                "mac": "002248814162",
+                                "flowTuples": [
+                                    "1651525678,183.136.225.35,10.1.2.4,49127,80,T,I,D,B,,,,"
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "time": "2022-05-02T21:10:37.8515501Z",
+            "systemId": "54b8986c-57c9-4e15-8869-1b8a6c082b1a",
+            "macAddress": "002248814162",
+            "category": "NetworkSecurityGroupFlowEvent",
+            "resourceId": "/SUBSCRIPTIONS/E7DA9914-9B05-4891-893C-546CB7B0422E/RESOURCEGROUPS/RSVMSS/PROVIDERS/MICROSOFT.NETWORK/NETWORKSECURITYGROUPS/NVA-NSG",
+            "operationName": "NetworkSecurityGroupFlowEvents",
+            "properties": {
+                "Version": 2,
+                "flows": [
+                    {
+                        "rule": "UserRule_Webout",
+                        "flows": [
+                            {
+                                "mac": "002248814162",
+                                "flowTuples": [
+                                    "1651525802,10.1.2.4,13.69.114.0,49512,443,T,O,A,B,,,,",
+                                    "1651525804,10.1.2.4,13.69.114.0,49524,443,T,O,A,B,,,,",
+                                    "1651525805,10.1.2.4,13.69.114.0,49528,443,T,O,A,B,,,,",
+                                    "1651525805,10.1.2.4,185.199.110.133,52890,443,T,O,A,B,,,,",
+                                    "1651525806,10.1.2.4,13.69.114.0,49534,443,T,O,A,B,,,,",
+                                    "1651525807,10.1.2.4,13.69.114.0,49538,443,T,O,A,B,,,,",
+                                    "1651525808,10.1.2.4,13.69.114.0,49512,443,T,O,A,E,10,3205,9,6047",
+                                    "1651525809,10.1.2.4,13.69.114.0,49524,443,T,O,A,E,11,3376,10,6372",
+                                    "1651525810,10.1.2.4,13.69.114.0,49528,443,T,O,A,E,11,3416,10,6282",
+                                    "1651525810,10.1.2.4,185.199.110.133,52890,443,T,O,A,E,9,1234,12,5541",
+                                    "1651525811,10.1.2.4,13.69.114.0,49534,443,T,O,A,E,11,3411,11,7263",
+                                    "1651525812,10.1.2.4,13.69.114.0,49538,443,T,O,A,E,11,3416,10,6282"
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "time": "2022-05-02T21:15:37.9255476Z",
+            "systemId": "54b8986c-57c9-4e15-8869-1b8a6c082b1a",
+            "macAddress": "002248814162",
+            "category": "NetworkSecurityGroupFlowEvent",
+            "resourceId": "/SUBSCRIPTIONS/E7DA9914-9B05-4891-893C-546CB7B0422E/RESOURCEGROUPS/RSVMSS/PROVIDERS/MICROSOFT.NETWORK/NETWORKSECURITYGROUPS/NVA-NSG",
+            "operationName": "NetworkSecurityGroupFlowEvents",
+            "properties": {
+                "Version": 2,
+                "flows": [
+                    {
+                        "rule": "UserRule_Webout",
+                        "flows": [
+                            {
+                                "mac": "002248814162",
+                                "flowTuples": [
+                                    "1651526102,10.1.2.4,20.61.101.39,51550,443,T,O,A,B,,,,",
+                                    "1651526103,10.1.2.4,20.61.101.39,51554,443,T,O,A,B,,,,",
+                                    "1651526104,10.1.2.4,20.61.101.39,51566,443,T,O,A,B,,,,",
+                                    "1651526105,10.1.2.4,185.199.110.133,53400,443,T,O,A,B,,,,",
+                                    "1651526106,10.1.2.4,20.61.101.39,51572,443,T,O,A,B,,,,",
+                                    "1651526106,10.1.2.4,20.61.101.39,51576,443,T,O,A,B,,,,",
+                                    "1651526107,10.1.2.4,20.61.101.39,51550,443,T,O,A,E,10,3205,10,6104",
+                                    "1651526109,10.1.2.4,20.61.101.39,51554,443,T,O,A,E,11,3376,11,6444",
+                                    "1651526110,10.1.2.4,20.61.101.39,51566,443,T,O,A,E,11,3416,10,6279",
+                                    "1651526110,10.1.2.4,185.199.110.133,53400,443,T,O,A,E,9,1234,12,5541",
+                                    "1651526111,10.1.2.4,20.61.101.39,51572,443,T,O,A,E,11,3411,11,7275",
+                                    "1651526112,10.1.2.4,20.61.101.39,51576,443,T,O,A,E,11,3416,10,6294"
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "time": "2022-05-02T21:20:37.9494542Z",
+            "systemId": "54b8986c-57c9-4e15-8869-1b8a6c082b1a",
+            "macAddress": "002248814162",
+            "category": "NetworkSecurityGroupFlowEvent",
+            "resourceId": "/SUBSCRIPTIONS/E7DA9914-9B05-4891-893C-546CB7B0422E/RESOURCEGROUPS/RSVMSS/PROVIDERS/MICROSOFT.NETWORK/NETWORKSECURITYGROUPS/NVA-NSG",
+            "operationName": "NetworkSecurityGroupFlowEvents",
+            "properties": {
+                "Version": 2,
+                "flows": [
+                    {
+                        "rule": "UserRule_Webout",
+                        "flows": [
+                            {
+                                "mac": "002248814162",
+                                "flowTuples": [
+                                    "1651526402,10.1.2.4,20.61.101.39,52056,443,T,O,A,B,,,,",
+                                    "1651526403,10.1.2.4,13.69.114.0,50532,443,T,O,A,B,,,,",
+                                    "1651526404,10.1.2.4,13.69.114.0,50536,443,T,O,A,B,,,,",
+                                    "1651526405,10.1.2.4,185.199.110.133,53898,443,T,O,A,B,,,,",
+                                    "1651526405,10.1.2.4,13.69.114.0,50550,443,T,O,A,B,,,,",
+                                    "1651526406,10.1.2.4,13.69.114.0,50554,443,T,O,A,B,,,,",
+                                    "1651526407,10.1.2.4,20.61.101.39,52056,443,T,O,A,E,10,3205,9,6044",
+                                    "1651526409,10.1.2.4,13.69.114.0,50532,443,T,O,A,E,11,3376,10,6372",
+                                    "1651526410,10.1.2.4,13.69.114.0,50536,443,T,O,A,E,11,3416,10,6282",
+                                    "1651526410,10.1.2.4,185.199.110.133,53898,443,T,O,A,E,9,1234,12,5541",
+                                    "1651526411,10.1.2.4,13.69.114.0,50550,443,T,O,A,E,11,3411,11,7278",
+                                    "1651526412,10.1.2.4,13.69.114.0,50554,443,T,O,A,E,11,3416,11,6321"
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "time": "2022-05-02T21:21:37.9573318Z",
+            "systemId": "54b8986c-57c9-4e15-8869-1b8a6c082b1a",
+            "macAddress": "002248814162",
+            "category": "NetworkSecurityGroupFlowEvent",
+            "resourceId": "/SUBSCRIPTIONS/E7DA9914-9B05-4891-893C-546CB7B0422E/RESOURCEGROUPS/RSVMSS/PROVIDERS/MICROSOFT.NETWORK/NETWORKSECURITYGROUPS/NVA-NSG",
+            "operationName": "NetworkSecurityGroupFlowEvents",
+            "properties": {
+                "Version": 2,
+                "flows": [
+                    {
+                        "rule": "DefaultRule_AllowInternetOutBound",
+                        "flows": [
+                            {
+                                "mac": "002248814162",
+                                "flowTuples": [
+                                    "1651526474,10.1.2.4,91.189.89.199,46270,123,U,O,A,B,,,,",
+                                    "1651526484,10.1.2.4,91.189.91.157,42701,123,U,O,A,B,,,,"
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "time": "2022-05-02T21:22:37.9683911Z",
+            "systemId": "54b8986c-57c9-4e15-8869-1b8a6c082b1a",
+            "macAddress": "002248814162",
+            "category": "NetworkSecurityGroupFlowEvent",
+            "resourceId": "/SUBSCRIPTIONS/E7DA9914-9B05-4891-893C-546CB7B0422E/RESOURCEGROUPS/RSVMSS/PROVIDERS/MICROSOFT.NETWORK/NETWORKSECURITYGROUPS/NVA-NSG",
+            "operationName": "NetworkSecurityGroupFlowEvents",
+            "properties": {
+                "Version": 2,
+                "flows": [
+                    {
+                        "rule": "DefaultRule_AllowInternetOutBound",
+                        "flows": [
+                            {
+                                "mac": "002248814162",
+                                "flowTuples": [
+                                    "1651526495,10.1.2.4,91.189.94.4,38785,123,U,O,A,B,,,,",
+                                    "1651526505,10.1.2.4,91.189.89.198,43454,123,U,O,A,B,,,,"
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "time": "2022-05-02T21:24:37.9920746Z",
+            "systemId": "54b8986c-57c9-4e15-8869-1b8a6c082b1a",
+            "macAddress": "002248814162",
+            "category": "NetworkSecurityGroupFlowEvent",
+            "resourceId": "/SUBSCRIPTIONS/E7DA9914-9B05-4891-893C-546CB7B0422E/RESOURCEGROUPS/RSVMSS/PROVIDERS/MICROSOFT.NETWORK/NETWORKSECURITYGROUPS/NVA-NSG",
+            "operationName": "NetworkSecurityGroupFlowEvents",
+            "properties": {
+                "Version": 2,
+                "flows": [
+                    {
+                        "rule": "DefaultRule_AllowInternetOutBound",
+                        "flows": [
+                            {
+                                "mac": "002248814162",
+                                "flowTuples": [
+                                    "1651526627,10.1.2.4,91.189.89.198,43454,123,U,O,A,C,0,0,0,0",
+                                    "1651526627,10.1.2.4,91.189.94.4,38785,123,U,O,A,C,0,0,0,0",
+                                    "1651526627,10.1.2.4,91.189.89.199,46270,123,U,O,A,C,0,0,0,0",
+                                    "1651526627,10.1.2.4,91.189.91.157,42701,123,U,O,A,C,0,0,0,0"
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "time": "2022-05-02T21:25:38.0012735Z",
+            "systemId": "54b8986c-57c9-4e15-8869-1b8a6c082b1a",
+            "macAddress": "002248814162",
+            "category": "NetworkSecurityGroupFlowEvent",
+            "resourceId": "/SUBSCRIPTIONS/E7DA9914-9B05-4891-893C-546CB7B0422E/RESOURCEGROUPS/RSVMSS/PROVIDERS/MICROSOFT.NETWORK/NETWORKSECURITYGROUPS/NVA-NSG",
+            "operationName": "NetworkSecurityGroupFlowEvents",
+            "properties": {
+                "Version": 2,
+                "flows": [
+                    {
+                        "rule": "DefaultRule_AllowInternetOutBound",
+                        "flows": [
+                            {
+                                "mac": "002248814162",
+                                "flowTuples": [
+                                    "1651526733,10.1.2.4,91.189.89.199,46270,123,U,O,A,E,0,0,0,0"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "rule": "UserRule_Webout",
+                        "flows": [
+                            {
+                                "mac": "002248814162",
+                                "flowTuples": [
+                                    "1651526702,10.1.2.4,20.61.101.39,52562,443,T,O,A,B,,,,",
+                                    "1651526704,10.1.2.4,20.61.101.39,52566,443,T,O,A,B,,,,",
+                                    "1651526705,10.1.2.4,20.61.101.39,52570,443,T,O,A,B,,,,",
+                                    "1651526705,10.1.2.4,185.199.110.133,54404,443,T,O,A,B,,,,",
+                                    "1651526706,10.1.2.4,20.61.101.39,52576,443,T,O,A,B,,,,",
+                                    "1651526707,10.1.2.4,20.61.101.39,52588,443,T,O,A,B,,,,",
+                                    "1651526708,10.1.2.4,20.61.101.39,52562,443,T,O,A,E,10,3205,9,6044",
+                                    "1651526709,10.1.2.4,20.61.101.39,52566,443,T,O,A,E,11,3376,10,6384",
+                                    "1651526710,10.1.2.4,20.61.101.39,52570,443,T,O,A,E,11,3416,10,6279",
+                                    "1651526710,10.1.2.4,185.199.110.133,54404,443,T,O,A,E,9,1234,12,5541",
+                                    "1651526711,10.1.2.4,20.61.101.39,52576,443,T,O,A,E,11,3411,11,7275",
+                                    "1651526712,10.1.2.4,20.61.101.39,52588,443,T,O,A,E,11,3416,10,6294"
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "time": "2022-05-02T21:26:37.9935958Z",
+            "systemId": "54b8986c-57c9-4e15-8869-1b8a6c082b1a",
+            "macAddress": "002248814162",
+            "category": "NetworkSecurityGroupFlowEvent",
+            "resourceId": "/SUBSCRIPTIONS/E7DA9914-9B05-4891-893C-546CB7B0422E/RESOURCEGROUPS/RSVMSS/PROVIDERS/MICROSOFT.NETWORK/NETWORKSECURITYGROUPS/NVA-NSG",
+            "operationName": "NetworkSecurityGroupFlowEvents",
+            "properties": {
+                "Version": 2,
+                "flows": [
+                    {
+                        "rule": "DefaultRule_AllowInternetOutBound",
+                        "flows": [
+                            {
+                                "mac": "002248814162",
+                                "flowTuples": [
+                                    "1651526743,10.1.2.4,91.189.91.157,42701,123,U,O,A,E,0,0,0,0",
+                                    "1651526753,10.1.2.4,91.189.94.4,38785,123,U,O,A,E,0,0,0,0",
+                                    "1651526763,10.1.2.4,91.189.89.198,43454,123,U,O,A,E,0,0,0,0"
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "time": "2022-05-02T21:30:38.0372346Z",
+            "systemId": "54b8986c-57c9-4e15-8869-1b8a6c082b1a",
+            "macAddress": "002248814162",
+            "category": "NetworkSecurityGroupFlowEvent",
+            "resourceId": "/SUBSCRIPTIONS/E7DA9914-9B05-4891-893C-546CB7B0422E/RESOURCEGROUPS/RSVMSS/PROVIDERS/MICROSOFT.NETWORK/NETWORKSECURITYGROUPS/NVA-NSG",
+            "operationName": "NetworkSecurityGroupFlowEvents",
+            "properties": {
+                "Version": 2,
+                "flows": [
+                    {
+                        "rule": "UserRule_Webout",
+                        "flows": [
+                            {
+                                "mac": "002248814162",
+                                "flowTuples": [
+                                    "1651527001,10.1.2.4,20.61.101.39,53068,443,T,O,A,B,,,,",
+                                    "1651527003,10.1.2.4,20.61.101.39,53072,443,T,O,A,B,,,,",
+                                    "1651527003,10.1.2.4,20.61.101.39,53076,443,T,O,A,B,,,,",
+                                    "1651527004,10.1.2.4,185.199.108.133,60414,443,T,O,A,B,,,,",
+                                    "1651527005,10.1.2.4,20.61.101.39,53082,443,T,O,A,B,,,,",
+                                    "1651527005,10.1.2.4,20.61.101.39,53086,443,T,O,A,B,,,,",
+                                    "1651527007,10.1.2.4,20.61.101.39,53068,443,T,O,A,E,10,3205,9,6044",
+                                    "1651527008,10.1.2.4,20.61.101.39,53072,443,T,O,A,E,11,3376,10,6384",
+                                    "1651527009,10.1.2.4,20.61.101.39,53076,443,T,O,A,E,11,3416,10,6279",
+                                    "1651527009,10.1.2.4,185.199.108.133,60414,443,T,O,A,E,9,1234,11,5475",
+                                    "1651527010,10.1.2.4,20.61.101.39,53082,443,T,O,A,E,11,3411,11,7275",
+                                    "1651527011,10.1.2.4,20.61.101.39,53086,443,T,O,A,E,11,3416,10,6294"
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "time": "2022-05-02T21:35:38.0697888Z",
+            "systemId": "54b8986c-57c9-4e15-8869-1b8a6c082b1a",
+            "macAddress": "002248814162",
+            "category": "NetworkSecurityGroupFlowEvent",
+            "resourceId": "/SUBSCRIPTIONS/E7DA9914-9B05-4891-893C-546CB7B0422E/RESOURCEGROUPS/RSVMSS/PROVIDERS/MICROSOFT.NETWORK/NETWORKSECURITYGROUPS/NVA-NSG",
+            "operationName": "NetworkSecurityGroupFlowEvents",
+            "properties": {
+                "Version": 2,
+                "flows": [
+                    {
+                        "rule": "UserRule_Webout",
+                        "flows": [
+                            {
+                                "mac": "002248814162",
+                                "flowTuples": [
+                                    "1651527302,10.1.2.4,13.69.114.0,52038,443,T,O,A,B,,,,",
+                                    "1651527304,10.1.2.4,13.69.106.212,47594,443,T,O,A,B,,,,",
+                                    "1651527304,10.1.2.4,13.69.114.0,52052,443,T,O,A,B,,,,",
+                                    "1651527305,10.1.2.4,13.69.114.0,52056,443,T,O,A,B,,,,",
+                                    "1651527305,10.1.2.4,185.199.111.133,47110,443,T,O,A,B,,,,",
+                                    "1651527306,10.1.2.4,13.69.114.0,52062,443,T,O,A,B,,,,",
+                                    "1651527307,10.1.2.4,13.69.114.0,52066,443,T,O,A,B,,,,",
+                                    "1651527308,10.1.2.4,13.69.114.0,52038,443,T,O,A,E,10,3205,9,6047",
+                                    "1651527309,10.1.2.4,13.69.114.0,52052,443,T,O,A,E,11,3376,10,6372",
+                                    "1651527310,10.1.2.4,13.69.114.0,52056,443,T,O,A,E,11,3416,10,6282",
+                                    "1651527310,10.1.2.4,185.199.111.133,47110,443,T,O,A,E,9,1234,12,5539",
+                                    "1651527311,10.1.2.4,13.69.114.0,52062,443,T,O,A,E,11,3411,11,7263",
+                                    "1651527312,10.1.2.4,13.69.114.0,52066,443,T,O,A,E,11,3416,10,6282"
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "time": "2022-05-02T21:39:38.1377096Z",
+            "systemId": "54b8986c-57c9-4e15-8869-1b8a6c082b1a",
+            "macAddress": "002248814162",
+            "category": "NetworkSecurityGroupFlowEvent",
+            "resourceId": "/SUBSCRIPTIONS/E7DA9914-9B05-4891-893C-546CB7B0422E/RESOURCEGROUPS/RSVMSS/PROVIDERS/MICROSOFT.NETWORK/NETWORKSECURITYGROUPS/NVA-NSG",
+            "operationName": "NetworkSecurityGroupFlowEvents",
+            "properties": {
+                "Version": 2,
+                "flows": [
+                    {
+                        "rule": "UserRule_Webout",
+                        "flows": [
+                            {
+                                "mac": "002248814162",
+                                "flowTuples": [
+                                    "1651527527,10.1.2.4,13.69.106.212,47594,443,T,O,A,C,24,154160,26,7124",
+                                    "1651527547,10.1.2.4,13.69.106.212,47594,443,T,O,A,E,0,0,0,0"
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "time": "2022-05-02T21:40:38.1442616Z",
+            "systemId": "54b8986c-57c9-4e15-8869-1b8a6c082b1a",
+            "macAddress": "002248814162",
+            "category": "NetworkSecurityGroupFlowEvent",
+            "resourceId": "/SUBSCRIPTIONS/E7DA9914-9B05-4891-893C-546CB7B0422E/RESOURCEGROUPS/RSVMSS/PROVIDERS/MICROSOFT.NETWORK/NETWORKSECURITYGROUPS/NVA-NSG",
+            "operationName": "NetworkSecurityGroupFlowEvents",
+            "properties": {
+                "Version": 2,
+                "flows": [
+                    {
+                        "rule": "UserRule_Webout",
+                        "flows": [
+                            {
+                                "mac": "002248814162",
+                                "flowTuples": [
+                                    "1651527601,10.1.2.4,13.69.114.0,52548,443,T,O,A,B,,,,",
+                                    "1651527602,10.1.2.4,20.61.101.39,54080,443,T,O,A,B,,,,",
+                                    "1651527603,10.1.2.4,20.61.101.39,54084,443,T,O,A,B,,,,",
+                                    "1651527604,10.1.2.4,185.199.111.133,47618,443,T,O,A,B,,,,",
+                                    "1651527604,10.1.2.4,20.61.101.39,54098,443,T,O,A,B,,,,",
+                                    "1651527605,10.1.2.4,20.61.101.39,54102,443,T,O,A,B,,,,",
+                                    "1651527606,10.1.2.4,13.69.114.0,52548,443,T,O,A,E,10,3205,9,6047",
+                                    "1651527608,10.1.2.4,20.61.101.39,54080,443,T,O,A,E,11,3376,10,6369",
+                                    "1651527609,10.1.2.4,20.61.101.39,54084,443,T,O,A,E,11,3416,10,6294",
+                                    "1651527609,10.1.2.4,185.199.111.133,47618,443,T,O,A,E,9,1234,12,5541",
+                                    "1651527610,10.1.2.4,20.61.101.39,54098,443,T,O,A,E,11,3411,11,7275",
+                                    "1651527610,10.1.2.4,20.61.101.39,54102,443,T,O,A,E,11,3416,10,6279"
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "time": "2022-05-02T21:45:38.1835663Z",
+            "systemId": "54b8986c-57c9-4e15-8869-1b8a6c082b1a",
+            "macAddress": "002248814162",
+            "category": "NetworkSecurityGroupFlowEvent",
+            "resourceId": "/SUBSCRIPTIONS/E7DA9914-9B05-4891-893C-546CB7B0422E/RESOURCEGROUPS/RSVMSS/PROVIDERS/MICROSOFT.NETWORK/NETWORKSECURITYGROUPS/NVA-NSG",
+            "operationName": "NetworkSecurityGroupFlowEvents",
+            "properties": {
+                "Version": 2,
+                "flows": [
+                    {
+                        "rule": "UserRule_Webout",
+                        "flows": [
+                            {
+                                "mac": "002248814162",
+                                "flowTuples": [
+                                    "1651527902,10.1.2.4,13.69.114.0,53054,443,T,O,A,B,,,,",
+                                    "1651527903,10.1.2.4,13.69.114.0,53058,443,T,O,A,B,,,,",
+                                    "1651527904,10.1.2.4,13.69.114.0,53062,443,T,O,A,B,,,,",
+                                    "1651527904,10.1.2.4,185.199.111.133,48116,443,T,O,A,B,,,,",
+                                    "1651527905,10.1.2.4,13.69.114.0,53076,443,T,O,A,B,,,,",
+                                    "1651527906,10.1.2.4,13.69.114.0,53080,443,T,O,A,B,,,,",
+                                    "1651527907,10.1.2.4,13.69.114.0,53054,443,T,O,A,E,10,3205,9,6047",
+                                    "1651527908,10.1.2.4,13.69.114.0,53058,443,T,O,A,E,11,3376,10,6372",
+                                    "1651527909,10.1.2.4,13.69.114.0,53062,443,T,O,A,E,11,3416,10,6282",
+                                    "1651527910,10.1.2.4,185.199.111.133,48116,443,T,O,A,E,10,1300,12,5541",
+                                    "1651527911,10.1.2.4,13.69.114.0,53076,443,T,O,A,E,11,3411,11,7263",
+                                    "1651527911,10.1.2.4,13.69.114.0,53080,443,T,O,A,E,11,3416,10,6282"
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "time": "2022-05-02T21:50:38.2542954Z",
+            "systemId": "54b8986c-57c9-4e15-8869-1b8a6c082b1a",
+            "macAddress": "002248814162",
+            "category": "NetworkSecurityGroupFlowEvent",
+            "resourceId": "/SUBSCRIPTIONS/E7DA9914-9B05-4891-893C-546CB7B0422E/RESOURCEGROUPS/RSVMSS/PROVIDERS/MICROSOFT.NETWORK/NETWORKSECURITYGROUPS/NVA-NSG",
+            "operationName": "NetworkSecurityGroupFlowEvents",
+            "properties": {
+                "Version": 2,
+                "flows": [
+                    {
+                        "rule": "UserRule_Webout",
+                        "flows": [
+                            {
+                                "mac": "002248814162",
+                                "flowTuples": [
+                                    "1651528202,10.1.2.4,13.69.114.0,53560,443,T,O,A,B,,,,",
+                                    "1651528205,10.1.2.4,13.69.114.0,53564,443,T,O,A,B,,,,",
+                                    "1651528205,10.1.2.4,13.69.114.0,53568,443,T,O,A,B,,,,",
+                                    "1651528206,10.1.2.4,185.199.111.133,48622,443,T,O,A,B,,,,",
+                                    "1651528206,10.1.2.4,13.69.114.0,53582,443,T,O,A,B,,,,",
+                                    "1651528207,10.1.2.4,13.69.114.0,53586,443,T,O,A,B,,,,",
+                                    "1651528209,10.1.2.4,13.69.114.0,53560,443,T,O,A,E,10,3205,9,6047",
+                                    "1651528210,10.1.2.4,13.69.114.0,53564,443,T,O,A,E,11,3376,10,6372",
+                                    "1651528211,10.1.2.4,13.69.114.0,53568,443,T,O,A,E,11,3416,10,6282",
+                                    "1651528211,10.1.2.4,185.199.111.133,48622,443,T,O,A,E,9,1234,12,5541",
+                                    "1651528212,10.1.2.4,13.69.114.0,53582,443,T,O,A,E,11,3411,11,7263",
+                                    "1651528213,10.1.2.4,13.69.114.0,53586,443,T,O,A,E,11,3416,10,6282"
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "time": "2022-05-02T21:55:38.2482831Z",
+            "systemId": "54b8986c-57c9-4e15-8869-1b8a6c082b1a",
+            "macAddress": "002248814162",
+            "category": "NetworkSecurityGroupFlowEvent",
+            "resourceId": "/SUBSCRIPTIONS/E7DA9914-9B05-4891-893C-546CB7B0422E/RESOURCEGROUPS/RSVMSS/PROVIDERS/MICROSOFT.NETWORK/NETWORKSECURITYGROUPS/NVA-NSG",
+            "operationName": "NetworkSecurityGroupFlowEvents",
+            "properties": {
+                "Version": 2,
+                "flows": [
+                    {
+                        "rule": "UserRule_Webout",
+                        "flows": [
+                            {
+                                "mac": "002248814162",
+                                "flowTuples": [
+                                    "1651528502,10.1.2.4,13.69.114.0,54066,443,T,O,A,B,,,,",
+                                    "1651528504,10.1.2.4,20.61.101.39,55598,443,T,O,A,B,,,,",
+                                    "1651528505,10.1.2.4,20.61.101.39,55602,443,T,O,A,B,,,,",
+                                    "1651528505,10.1.2.4,185.199.110.133,57436,443,T,O,A,B,,,,",
+                                    "1651528506,10.1.2.4,20.61.101.39,55608,443,T,O,A,B,,,,",
+                                    "1651528507,10.1.2.4,20.61.101.39,55620,443,T,O,A,B,,,,",
+                                    "1651528508,10.1.2.4,13.69.114.0,54066,443,T,O,A,E,10,3205,9,6047",
+                                    "1651528509,10.1.2.4,20.61.101.39,55598,443,T,O,A,E,11,3376,11,6429",
+                                    "1651528510,10.1.2.4,20.61.101.39,55602,443,T,O,A,E,11,3416,10,6294",
+                                    "1651528510,10.1.2.4,185.199.110.133,57436,443,T,O,A,E,10,1288,11,5473",
+                                    "1651528511,10.1.2.4,20.61.101.39,55608,443,T,O,A,E,11,3411,11,7275",
+                                    "1651528512,10.1.2.4,20.61.101.39,55620,443,T,O,A,E,11,3416,10,6279"
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "time": "2022-05-02T21:56:38.2658637Z",
+            "systemId": "54b8986c-57c9-4e15-8869-1b8a6c082b1a",
+            "macAddress": "002248814162",
+            "category": "NetworkSecurityGroupFlowEvent",
+            "resourceId": "/SUBSCRIPTIONS/E7DA9914-9B05-4891-893C-546CB7B0422E/RESOURCEGROUPS/RSVMSS/PROVIDERS/MICROSOFT.NETWORK/NETWORKSECURITYGROUPS/NVA-NSG",
+            "operationName": "NetworkSecurityGroupFlowEvents",
+            "properties": {
+                "Version": 2,
+                "flows": [
+                    {
+                        "rule": "DefaultRule_AllowInternetOutBound",
+                        "flows": [
+                            {
+                                "mac": "002248814162",
+                                "flowTuples": [
+                                    "1651528563,10.1.2.4,91.189.91.157,45708,123,U,O,A,B,,,,",
+                                    "1651528574,10.1.2.4,91.189.89.198,37490,123,U,O,A,B,,,,",
+                                    "1651528584,10.1.2.4,91.189.89.199,35508,123,U,O,A,B,,,,",
+                                    "1651528594,10.1.2.4,91.189.94.4,52958,123,U,O,A,B,,,,"
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "time": "2022-05-02T21:59:38.2991906Z",
+            "systemId": "54b8986c-57c9-4e15-8869-1b8a6c082b1a",
+            "macAddress": "002248814162",
+            "category": "NetworkSecurityGroupFlowEvent",
+            "resourceId": "/SUBSCRIPTIONS/E7DA9914-9B05-4891-893C-546CB7B0422E/RESOURCEGROUPS/RSVMSS/PROVIDERS/MICROSOFT.NETWORK/NETWORKSECURITYGROUPS/NVA-NSG",
+            "operationName": "NetworkSecurityGroupFlowEvents",
+            "properties": {
+                "Version": 2,
+                "flows": [
+                    {
+                        "rule": "DefaultRule_AllowInternetOutBound",
+                        "flows": [
+                            {
+                                "mac": "002248814162",
+                                "flowTuples": [
+                                    "1651528727,10.1.2.4,91.189.94.4,52958,123,U,O,A,C,0,0,0,0",
+                                    "1651528727,10.1.2.4,91.189.89.199,35508,123,U,O,A,C,0,0,0,0",
+                                    "1651528727,10.1.2.4,91.189.91.157,45708,123,U,O,A,C,0,0,0,0",
+                                    "1651528727,10.1.2.4,91.189.89.198,37490,123,U,O,A,C,0,0,0,0"
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    ]
+}
