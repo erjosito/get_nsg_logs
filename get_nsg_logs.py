@@ -207,16 +207,13 @@ for nsg_name in nsgList:
                                 if action=='D' or not display_only_drops:
                                     if (direction == 'I' and display_direction == 'in') or (direction == 'O' and display_direction == 'out') or (display_direction == 'both'):
                                             if src_ip != "168.63.129.16" or display_lb == True:
-                                                display_record = True
-                                if display_minutes == 0:
-                                    display_record = True
-                                else:
-                                    td_mins = get_minutes_delta(record['time'])
-                                    print ("Time delta:", str(td_mins))
-                                    if td_mins <= display_minutes:
-                                        display_record = True
-                                    else:
-                                        display_record = False
+                                                if not display_minutes == 0:
+                                                    display_record = True
+                                                else:
+                                                    td_mins = get_minutes_delta(record['time'])
+                                                    # print ("Time delta:", str(td_mins))
+                                                    if td_mins <= display_minutes:
+                                                        display_record = True
                                 if display_record:
                                     print(record['time'], nsg_name, rule['rule'], action, direction, src_ip, src_port, dst_ip, dst_port)
                             # Version 2

@@ -76,13 +76,14 @@ optional arguments:
 There is something you need to do before being able to access Azure Blob Storage: finding out the Azure Storage Account key. The script will read it from the environtment variable STORAGE_ACCOUNT_KEY, that you can set with this command:
 
 ```
-export STORAGE_ACCOUNT_KEY=$(az storage account keys list -n your_storage_account_name --query [0].value -o tsv)
+storage_account_name="your_storage_account_name"
+export STORAGE_ACCOUNT_KEY=$(az storage account keys list -n $storage_account_name --query [0].value -o tsv)
 ```
 
 For example, in order to show dropped and allowed traffic of ingress NSG logs stored in the storage account `ernetworkhubdiag857`, excluding Azure LB probe traffic for the last 6 hours:
 
 ```
-$ python3 ./get_nsg_logs.py --account-name ernetworkhubdiag857 --display-hours 6 --display-direction in --display-allowed
+$ python3 ./get_nsg_logs.py --account-name $storage_account_name --display-hours 6 --display-direction in --display-allowed
 2018-09-21T09:49:57.3055150Z NVA-NSG DefaultRule_AllowVnetInBound A I 10.90.15.47 29014 10.139.149.70 23
 2018-09-21T09:49:57.3055150Z NVA-NSG DefaultRule_AllowVnetInBound A I 10.90.15.47 29014 10.139.149.70 23
 2018-09-21T09:49:57.3055150Z NVA-NSG DefaultRule_AllowVnetInBound A I 10.90.15.47 32069 10.139.149.70 23
