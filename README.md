@@ -32,7 +32,7 @@ git clone https://github.com/erjosito/get_nsg_logs
 If you don't have the Azure Storage Blob and pandas Python modules, you need to install them:
 
 ```
-pip install azure-storage-blob pandas --user
+pip3 install azure-storage-blob pandas --user
 ```
 
 Now you can have a look at the different options:
