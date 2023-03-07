@@ -141,12 +141,17 @@ def get_resource_list(blob_list):
     num_of_blobs=0
     num_of_resources=0
     for this_blob in blob_list:
+        # if args.verbose:
+        #     print("DEBUG: blob found: {0}".format(this_blob['name']))
         blob_name_parts = this_blob.name.split('/')
-        this_resource = blob_name_parts[8]
-        if not this_resource in resource_list:
-            resource_list.add(this_resource)
-            num_of_resources += 1
-        num_of_blobs += 1
+        try:
+            this_resource = blob_name_parts[8]
+            if not this_resource in resource_list:
+                resource_list.add(this_resource)
+                num_of_resources += 1
+            num_of_blobs += 1
+        except:
+            pass
     if args.verbose:
         print('DEBUG: Found', str(num_of_blobs), 'blobs for', str(num_of_resources), 'resources (FWs/NSGs).')
         print('DEBUG: resources found in that storage account:', resource_list)
@@ -170,9 +175,9 @@ def process_fw_logs(data):
             if len(action) > 0:
                 logrow_dict.update({'action': [ action[0][0] ] })
                 # if args.verbose:
-                #     print("Action {0} extracted from {1} in message {2}".format(action[0][0], str(action), msg))
+                #     print("DEBUG: Action {0} extracted from {1} in message {2}".format(action[0][0], str(action), msg))
             # elif args.verbose:
-            #     print("No action could be extracted from msg", msg)
+            #     print("DEBUG: No action could be extracted from msg", msg)
             # Src
             src_txt = re.findall(r'(?:from)\s(\S*)', msg)
             if len(src_txt) == 1:
@@ -340,10 +345,13 @@ def process_resources (resource_list, blob_list, container_client):
             date_list = []
             for this_blob in blob_list:
                 blob_name_parts = this_blob.name.split('/')
-                blob_resource  = blob_name_parts[8]
-                blob_time = "/".join(blob_name_parts[9:14])
-                if blob_resource == resource:
-                    date_list.append(blob_time)
+                try:
+                    blob_resource = blob_name_parts[8]
+                    blob_time = "/".join(blob_name_parts[9:14])
+                    if blob_resource == resource:
+                        date_list.append(blob_time)
+                except:
+                    pass
             date_list = list(set(date_list))  # Remove duplicates
             full_date_list = sorted(date_list, reverse=True)
             filtered_date_list = full_date_list[:display_hours]
@@ -355,10 +363,13 @@ def process_resources (resource_list, blob_list, container_client):
                 blob_matches = []
                 for this_blob in blob_list:
                     blob_name_parts = this_blob.name.split('/')
-                    blob_resource  = blob_name_parts[8]
-                    blob_time = "/".join(blob_name_parts[9:14])
-                    if blob_resource == resource and blob_time == thisDate:
-                        blob_matches.append(this_blob.name)
+                    try:
+                        blob_resource  = blob_name_parts[8]
+                        blob_time = "/".join(blob_name_parts[9:14])
+                        if blob_resource == resource and blob_time == thisDate:
+                            blob_matches.append(this_blob.name)
+                    except:
+                        pass
 
                 # Now we have a list of blobs that we want to process
                 for blob_name in blob_matches:
