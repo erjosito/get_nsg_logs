@@ -46,6 +46,9 @@ parser.add_argument('--resource-name', dest='resource_name_filter', action='stor
                     help='filter the output to a specific NSG or Firewall')
 parser.add_argument('--mode', dest='mode', action='store', default='nsg',
                     help='can be nsg,fw,both (default: nsg)')
+parser.add_argument('--vnet-flow-logs', dest='vnet_flow_logs', action='store_true',
+                    default=False,
+                    help='Look for VNet Flow Logs are analyzed (default: False)')
 parser.add_argument('--aggregate', dest='aggregate', action='store_true',
                     default=False,
                     help='prints byte/packet count aggregates (default: False)')
@@ -106,9 +109,13 @@ bytes_src_to_dst_aggr = 0
 packets_dst_to_src_aggr = 0
 bytes_dst_to_src_aggr = 0
 
-# The container will be the same for v1 and v2
-nsg_container_name = "insights-logs-networksecuritygroupflowevent"
+# The container will be the same for v1 and v2 NSG flow logs, but different for VNet Flow Logs
+if args.vnet_flow_logs:
+    flowlogs_container_name = "insights-logs-flowlogflowevent"
+else:
+    flowlogs_container_name = "insights-logs-networksecuritygroupflowevent"
 fw_container_name = "insights-logs-azurefirewall"
+
 
 #############
 # Functions #
@@ -432,7 +439,7 @@ block_blob_service = get_blob_client(account_name, account_key)
 
 # Create clients and get blob lists
 if (args.mode == 'nsg') or (args.mode == 'both'):
-    nsg_container_client = get_container_client(block_blob_service, nsg_container_name)
+    nsg_container_client = get_container_client(block_blob_service, flowlogs_container_name)
     nsg_blob_list = get_blob_list(nsg_container_client)
     if nsg_blob_list:
         nsg_list = get_resource_list (nsg_blob_list)
