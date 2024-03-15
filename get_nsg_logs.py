@@ -247,19 +247,112 @@ def process_flowlog_records(data):
     # flowlog processing
     for record in data['records']:
         record_counter += 1
-        resource_name = record['resourceId'].split('/')[8]
-        timestamp = pd.Timestamp(record['time'])
-        if ('Version' in record['properties']) and (record['properties']['Version'] == 2):
-            flow_version = 2
+        if 'resourceId' in record:
+            resource_name = record['resourceId'].split('/')[8]
+        elif 'flowLogResourceID' in record:
+            resource_name = record['flowLogResourceID'].split('/')[8]
         else:
-            flow_version = 1
-        for rule in record['properties']['flows']:
-            rule_name = rule["rule"]
-            for flow in rule['flows']:
-                flow_counter += 1
-                for flowtuple in flow['flowTuples']:
-                    # Version 1
-                    if flow_version == 1:
+            resource_name = "unknown"
+        timestamp = pd.Timestamp(record['time'])
+        if 'properties' in record:
+            if ('Version' in record['properties']) and (record['properties']['Version'] == 1):
+                flow_version = 1
+            elif ('Version' in record['properties']) and (record['properties']['Version'] == 2):
+                flow_version = 2
+        elif ('flowLogVersion' in record) and (record['flowLogVersion'] == 3):
+            flow_version = 3
+        elif ('flowLogVersion' in record) and (record['flowLogVersion'] == 4):
+            flow_version = 4
+        else:
+            flow_version = "unknown"
+        if (flow_version == 1) or (flow_version == 2):
+            for rule in record['properties']['flows']:
+                rule_name = rule["rule"]
+                for flow in rule['flows']:
+                    flow_counter += 1
+                    for flowtuple in flow['flowTuples']:
+                        # Version 1
+                        if flow_version == 1:
+                            tuple_values = flowtuple.split(',')
+                            src_ip=tuple_values[1]
+                            dst_ip=tuple_values[2]
+                            src_port=tuple_values[3]
+                            dst_port=tuple_values[4]
+                            protocol=tuple_values[5]
+                            direction=tuple_values[6]
+                            action=tuple_values[7]
+                            logrow_dict = {
+                                'timestamp': [ timestamp ],
+                                'type': ['nsg'],
+                                'resource': [resource_name],
+                                'rule': [rule_name],
+                                'src_ip': [ src_ip ],
+                                'dst_ip': [ dst_ip ],
+                                'src_port': [ src_port ],
+                                'dst_port': [ dst_port ],
+                                'protocol': [ protocol ],
+                                'direction': [ direction ],
+                                'action': [ action ]
+                            }
+                            df_logrow = pd.DataFrame(logrow_dict)
+                            df_logs = pd.concat([df_logs, df_logrow], ignore_index=True)
+                        # Version 2
+                        else:
+                            tuple_values = flowtuple.split(',')
+                            src_ip=tuple_values[1]
+                            dst_ip=tuple_values[2]
+                            src_port=tuple_values[3]
+                            dst_port=tuple_values[4]
+                            protocol=tuple_values[5]
+                            direction=tuple_values[6]
+                            action=tuple_values[7]
+                            try:
+                                state=tuple_values[8]
+                            except:
+                                state=""
+                            try:
+                                packets_src_to_dst=tuple_values[9]
+                            except:
+                                packets_src_to_dst=""
+                            try:
+                                bytes_src_to_dst=tuple_values[10]
+                            except:
+                                bytes_src_to_dst=""
+                            try:
+                                packets_dst_to_src=tuple_values[11]
+                            except:
+                                packets_dst_to_src=""
+                            try:
+                                bytes_dst_to_src=tuple_values[12]
+                            except:
+                                bytes_dst_to_src=""
+                            logrow_dict = {
+                                'timestamp': [ timestamp ],
+                                'type': ['nsg'],
+                                'resource': [resource_name],
+                                'rule': [rule_name],
+                                'state': [ state ],
+                                'packets_src_to_dst': [ packets_src_to_dst ],
+                                'bytes_src_to_dst': [ bytes_src_to_dst ],
+                                'packets_dst_to_src': [ packets_dst_to_src ],
+                                'bytes_dst_to_src': [ bytes_dst_to_src ],
+                                'src_ip': [ src_ip ],
+                                'dst_ip': [ dst_ip ],
+                                'src_port': [ src_port ],
+                                'dst_port': [ dst_port ],
+                                'protocol': [ protocol ],
+                                'direction': [ direction ],
+                                'action': [ action ]
+                            }
+                            df_logrow = pd.DataFrame(logrow_dict)
+                            df_logs = pd.concat([df_logs, df_logrow], ignore_index=True)
+        elif (flow_version == 4):
+            for flow in record['flowRecords']['flows']:
+                aclId = flow['aclID']
+                for flowGroup in flow['flowGroups']:
+                    flow_counter += 1
+                    rule_name = flowGroup["rule"]
+                    for flowtuple in flowGroup['flowTuples']:
                         tuple_values = flowtuple.split(',')
                         src_ip=tuple_values[1]
                         dst_ip=tuple_values[2]
@@ -267,36 +360,8 @@ def process_flowlog_records(data):
                         dst_port=tuple_values[4]
                         protocol=tuple_values[5]
                         direction=tuple_values[6]
-                        action=tuple_values[7]
-                        logrow_dict = {
-                            'timestamp': [ timestamp ],
-                            'type': ['nsg'],
-                            'resource': [resource_name],
-                            'rule': [rule_name],
-                            'src_ip': [ src_ip ],
-                            'dst_ip': [ dst_ip ],
-                            'src_port': [ src_port ],
-                            'dst_port': [ dst_port ],
-                            'protocol': [ protocol ],
-                            'direction': [ direction ],
-                            'action': [ action ]
-                        }
-                        df_logrow = pd.DataFrame(logrow_dict)
-                        df_logs = pd.concat([df_logs, df_logrow], ignore_index=True)
-                    # Version 2
-                    else:
-                        tuple_values = flowtuple.split(',')
-                        src_ip=tuple_values[1]
-                        dst_ip=tuple_values[2]
-                        src_port=tuple_values[3]
-                        dst_port=tuple_values[4]
-                        protocol=tuple_values[5]
-                        direction=tuple_values[6]
-                        action=tuple_values[7]
-                        try:
-                            state=tuple_values[8]
-                        except:
-                            state=""
+                        state=tuple_values[7]
+                        action="A"
                         try:
                             packets_src_to_dst=tuple_values[9]
                         except:
@@ -333,6 +398,8 @@ def process_flowlog_records(data):
                         }
                         df_logrow = pd.DataFrame(logrow_dict)
                         df_logs = pd.concat([df_logs, df_logrow], ignore_index=True)
+        else:
+            print("ERROR: Flow version", flow_version, "not supported")
     if args.verbose:
         print("DEBUG: {0} records and {1} flows added to data frame in {2} seconds".format(record_counter, flow_counter, time.time()-process_start_time))
     return df_logs
